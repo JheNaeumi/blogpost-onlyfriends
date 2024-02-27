@@ -1,168 +1,68 @@
 
 const BlogpostComponent = () => {
+   const people = [{
+        name: 'Leslie Alexander',
+        email: 'leslie.alexander@example.com',
+        role: 'Co-Founder / CEO',
+        caption:'Hello World',
+        post: 'Static websites are now used to bootstrap lots of websites and are becoming the basis for a variety of tools that even influence both web designers and developers influence both web designers and developers',
+        imageUrl:
+          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+        lastSeen: '3h ago',
+        lastSeenDateTime: '2023-01-23T13:23Z',
+      },
+      {
+        name: 'Leslie Alexander',
+        email: 'leslie.alexander@example.com',
+        role: 'Co-Founder / CEO',
+        caption:'Hello World',
+        post: 'Static websites are now used to bootstrap lots of websites and are becoming the basis for a variety of tools that even influence both web designers and developers influence both web designers and developers',
+        imageUrl:
+          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+        lastSeen: '3h ago',
+        lastSeenDateTime: '2023-01-23T13:23Z',
+      },
+    ]
     return (
-        <>
-                
-        <div class="flex w-screen h-screen px-4 text-gray-700">
-            <div class="flex max-w-screen-lg">
-                <div class="flex flex-col w-64 py-4 pr-3">
-                    <a class="px-3 py-2 mt-2 text-lg font-medium rounded-sm hover:bg-gray-300" href="#">Home</a>
-                    <a class="px-3 py-2 mt-2 text-lg font-medium rounded-sm hover:bg-gray-300" href="#">Discover</a>
-                    <a class="px-3 py-2 mt-2 text-lg font-medium rounded-sm hover:bg-gray-300" href="#">Notifications</a>
-                    <a class="px-3 py-2 mt-2 text-lg font-medium rounded-sm hover:bg-gray-300" href="#">Inbox</a>
-                    <a class="px-3 py-2 mt-2 text-lg font-medium rounded-sm hover:bg-gray-300" href="#">Saved Posts</a>
-                    <a class="px-3 py-2 mt-2 text-lg font-medium rounded-sm hover:bg-gray-300" href="#">Groups</a>
-                    <a class="px-3 py-2 mt-2 text-lg font-medium rounded-sm hover:bg-gray-300" href="#">Profile</a>
-                    <a class="flex px-3 py-2 mt-2 text-lg rounded-sm font-medium hover:bg-gray-200" href="#">
-                        <span class="flex-shrink-0 w-10 h-10 bg-gray-400 rounded-full"></span>
-                        <div class="flex flex-col ml-2">
-                            <span class="mt-1 text-sm font-semibold leading-none">Username</span>
-                            <span class="mt-1 text-xs leading-none">@username</span>
+    <>
+        <section class="bg-white dark:bg-gray-900">
+            <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
+                <div class="mx-auto max-w-screen-sm text-center lg:mb-16 mb-8">
+                    <h2 class="mb-4 text-3xl lg:text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Our Blog</h2>
+                    <p class="font-light text-gray-500 sm:text-xl dark:text-gray-400">We use an agile approach to test assumptions and connect with the needs of your audience early and often.</p>
+                </div> 
+                <div class="grid gap-8 lg:grid-cols-2">
+                    {people.map((person) =>
+                    <article class="p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
+                        <div class="flex justify-between items-center mb-5 text-gray-500">
+                            <span class="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-primary-200 dark:text-primary-800">
+                                <svg class="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path></svg>
+                                Tutorial
+                            </span>
+                            <span class="text-sm">{person.lastSeen}</span>
                         </div>
-                    </a>
-                </div>
-                <div class="flex flex-col flex-grow border-l border-r border-gray-300">
-                    <div class="flex justify-between flex-shrink-0 px-8 py-4 border-b border-gray-300">
-                        <h1 class="text-xl font-semibold">Feed Title</h1>
-                        <button class="flex items-center h-8 px-2 text-sm bg-gray-300 rounded-sm hover:bg-gray-400">New post</button>
-                    </div>
-                    <div class="flex-grow h-0 overflow-auto">
-                        <div class="flex w-full p-8 border-b-4 border-gray-300">
-                            <span class="flex-shrink-0 w-12 h-12 bg-gray-400 rounded-full"></span>
-                            <div class="flex flex-col flex-grow ml-4">
-                                <textarea class="p-3 bg-transparent border border-gray-500 rounded-sm" name="" id=""  rows="3" placeholder="What's happening?"></textarea>
-                                <div class="flex justify-between mt-2">
-                                    <button class="flex items-center h-8 px-3 text-xs rounded-sm hover:bg-gray-200">Attach</button>
-                                    <button class="flex items-center h-8 px-3 text-xs rounded-sm bg-gray-300 hover:bg-gray-400">Post</button>
-                                </div>
+                        <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"><a href="#">{person.caption}</a></h2>
+                        <p class="mb-5 font-light text-gray-500 dark:text-gray-400">{person.post}</p>
+                        <div class="flex flex-wrap justify-between items-center">
+                            <div class="flex items-center space-x-4">
+                                <img class="w-7 h-7 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png" alt="Jese Leos avatar" />
+                                <span class="font-medium dark:text-white">
+                                    {person.name}
+                                </span>
                             </div>
+                            <span class="flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline">
+                                {person.role}
+                            </span>
                         </div>
-                        <div class="flex w-full p-8 border-b border-gray-300">
-                            <span class="flex-shrink-0 w-12 h-12 bg-gray-400 rounded-full"></span>
-                            <div class="flex flex-col flex-grow ml-4">
-                                <div class="flex">
-                                    <span class="font-semibold">Username</span>
-                                    <span class="ml-1">@username</span>
-                                    <span class="ml-auto text-sm">Just now</span>
-                                </div>
-                                <p class="mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <a class="underline" href="#">#hashtag</a></p>
-                                <div class="flex mt-2">
-                                    <button class="text-sm font-semibold">Like</button>
-                                    <button class="ml-2 text-sm font-semibold">Reply</button>
-                                    <button class="ml-2 text-sm font-semibold">Share</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex w-full p-8 border-b border-gray-300">
-                            <span class="flex-shrink-0 w-12 h-12 bg-gray-400 rounded-full"></span>
-                            <div class="flex flex-col flex-grow ml-4">
-                                <div class="flex">
-                                    <span class="font-semibold">Username</span>
-                                    <span class="ml-1">@username</span>
-                                    <span class="ml-auto text-sm">Just now</span>
-                                </div>
-                                <p class="mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <a class="underline" href="#">#hashtag</a></p>
-                                <div class="flex mt-2">
-                                    <button class="text-sm font-semibold">Like</button>
-                                    <button class="ml-2 text-sm font-semibold">Reply</button>
-                                    <button class="ml-2 text-sm font-semibold">Share</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex w-full p-8 border-b border-gray-300">
-                            <span class="flex-shrink-0 w-12 h-12 bg-gray-400 rounded-full"></span>
-                            <div class="flex flex-col flex-grow ml-4">
-                                <div class="flex">
-                                    <span class="font-semibold">Username</span>
-                                    <span class="ml-1">@username</span>
-                                    <span class="ml-auto text-sm">Just now</span>
-                                </div>
-                                <p class="mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <a class="underline" href="#">#hashtag</a></p>
-                                <div class="flex items-center justify-center h-64 mt-2 bg-gray-200">
-                                    <span class="font-semibold text-gray-500">Image</span>
-                                </div>
-                                <div class="flex mt-2">
-                                    <button class="text-sm font-semibold">Like</button>
-                                    <button class="ml-2 text-sm font-semibold">Reply</button>
-                                    <button class="ml-2 text-sm font-semibold">Share</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex w-full p-8 border-b border-gray-300">
-                            <span class="flex-shrink-0 w-12 h-12 bg-gray-400 rounded-full"></span>
-                            <div class="flex flex-col flex-grow ml-4">
-                                <div class="flex">
-                                    <span class="font-semibold">Username</span>
-                                    <span class="ml-1">@username</span>
-                                    <span class="ml-auto text-sm">Just now</span>
-                                </div>
-                                <p class="mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <a class="underline" href="#">#hashtag</a></p>
-                                <div class="flex mt-2">
-                                    <button class="text-sm font-semibold">Like</button>
-                                    <button class="ml-2 text-sm font-semibold">Reply</button>
-                                    <button class="ml-2 text-sm font-semibold">Share</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex w-full p-8 border-b border-gray-300">
-                            <span class="flex-shrink-0 w-12 h-12 bg-gray-400 rounded-full"></span>
-                            <div class="flex flex-col flex-grow ml-4">
-                                <div class="flex">
-                                    <span class="font-semibold">Username</span>
-                                    <span class="ml-1">@username</span>
-                                    <span class="ml-auto text-sm">Just now</span>
-                                </div>
-                                <p class="mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <a class="underline" href="#">#hashtag</a></p>
-                                <div class="flex mt-2">
-                                    <button class="text-sm font-semibold">Like</button>
-                                    <button class="ml-2 text-sm font-semibold">Reply</button>
-                                    <button class="ml-2 text-sm font-semibold">Share</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex w-full p-8 border-b border-gray-300">
-                            <span class="flex-shrink-0 w-12 h-12 bg-gray-400 rounded-full"></span>
-                            <div class="flex flex-col flex-grow ml-4">
-                                <div class="flex">
-                                    <span class="font-semibold">Username</span>
-                                    <span class="ml-1">@username</span>
-                                    <span class="ml-auto text-sm">Just now</span>
-                                </div>
-                                <p class="mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <a class="underline" href="#">#hashtag</a></p>
-                                <div class="flex items-center justify-center h-64 mt-2 bg-gray-200">
-                                    <span class="font-semibold text-gray-500">Image</span>
-                                </div>
-                                <div class="flex mt-2">
-                                    <button class="text-sm font-semibold">Like</button>
-                                    <button class="ml-2 text-sm font-semibold">Reply</button>
-                                    <button class="ml-2 text-sm font-semibold">Share</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex w-full p-8 border-b border-gray-300">
-                            <span class="flex-shrink-0 w-12 h-12 bg-gray-400 rounded-full"></span>
-                            <div class="flex flex-col flex-grow ml-4">
-                                <div class="flex">
-                                    <span class="font-semibold">Username</span>
-                                    <span class="ml-1">@username</span>
-                                    <span class="ml-auto text-sm">Just now</span>
-                                </div>
-                                <p class="mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <a class="underline" href="#">#hashtag</a></p>
-                                <div class="flex items-center justify-center h-64 mt-2 bg-gray-200">
-                                    <span class="font-semibold text-gray-500">Image</span>
-                                </div>
-                                <div class="flex mt-2">
-                                    <button class="text-sm font-semibold">Like</button>
-                                    <button class="ml-2 text-sm font-semibold">Reply</button>
-                                    <button class="ml-2 text-sm font-semibold">Share</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    </article>
+                    )}              
+                </div>  
             </div>
-        </div>
-        </>
+        </section>
+
+    </>
+      
+       
     )
 }
 
