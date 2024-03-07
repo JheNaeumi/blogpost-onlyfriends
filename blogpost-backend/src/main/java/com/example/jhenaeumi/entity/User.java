@@ -1,17 +1,27 @@
 package com.example.jhenaeumi.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "User")
+@Table(name = "user")
 public class User {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
-    @Column(name = "username")
+    @Column(name = "username", nullable = false)
     private String username;
-    @Column(name = "password")
+    @Column(name ="email", nullable = false, unique = true)
+    private String email;
+    @Column(name = "password", nullable = false)
     private String password;
 
 }
