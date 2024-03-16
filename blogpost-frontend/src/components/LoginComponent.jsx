@@ -1,34 +1,39 @@
-import { getLogin } from "../service/LoginService"
-import { useState } from "react";
+import { postLogin } from "../service/LoginService"
+import { useState,useLayoutEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { setAuthHeader } from "../service/AuthService";
 
 
 const LoginComponent = () => {
+      let navigate = useNavigate();
+      const [login, setLogin] = useState('');
+      const [password, setPassword] = useState('')
      
-      const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-      });
-      const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-          ...prevData,
-          [name]: value,
-        }));
-      };
       const handleSubmit = async (e) => {
         e.preventDefault();
-    
+       
         try {
-          // Call the postLogin function from your service
-          const response = await getLogin(formData);
-    
-          // Handle the response as needed (e.g., redirect, show a message)
-          console.log('Login successful', response);
-        } catch (error) {
-          // Handle login error (e.g., show an error message)
+          const userlogin = {login, password}
+         
+          const response = await postLogin(userlogin)
+          if (response.status === 200) {
+              const data = await response;
+              setAuthHeader(response.data.token);
+              console.log('Login successful', data);
+              navigate("/");
+
+          } else {
+              setAuthHeader(null);
+              console.error('Login failed', response.statusText);
+              setLogin('')
+              setPassword('')
+          }
+      } catch (error) {
           console.error('Login failed', error);
-        }
-      };
+      }
+    
+      }
     return (
         <>
           <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -45,12 +50,12 @@ const LoginComponent = () => {
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
               <form className="space-y-6" action="#" method="POST" onSubmit={handleSubmit}>
                 <div>
-                  <div class="mb-5">
+                  <div className="mb-5">
                     <label htmlFor="email" className="flex text-sm font-medium leading-6 text-gray-900">
                       Email address
                     </label>
                     <input type="email" id="email" name="email" 
-                    class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="name@flowbite.com" required value={formData.email} onChange={handleChange} />
+                    className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="name@flowbite.com" required value={login} onChange={(e) => setLogin(e.target.value)} />
                   </div>
                 </div>
                 <div>
@@ -64,8 +69,8 @@ const LoginComponent = () => {
                       </a>
                     </div>
                   </div>
-                  <div class="mb-5">
-                    <input type="password" id="password" name="password" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" required value={formData.password} onChange={handleChange}/>
+                  <div className="mb-5">
+                    <input type="password" id="password" name="password" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" required value={password} onChange={(e) => setPassword(e.target.value)}/>
                   </div>
                 </div>
                 <div>
@@ -79,7 +84,7 @@ const LoginComponent = () => {
               </form>
               <p className="mt-10 text-center text-sm text-gray-500">
                 Not a member?{' '}
-                <a href="#" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+                <a href="/registration" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
                  Sign up
                 </a>
               </p>
