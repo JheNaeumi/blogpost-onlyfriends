@@ -1,14 +1,14 @@
 import { postLogin } from "../service/LoginService"
-import { useState,useLayoutEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { setAuthHeader } from "../service/AuthService";
+import { getAuthToken, setAuthHeader } from "../service/AuthService";
 
 
 const LoginComponent = () => {
-      let navigate = useNavigate();
+      const navigate = useNavigate();
       const [login, setLogin] = useState('');
-      const [password, setPassword] = useState('')
+      const [password, setPassword] = useState('');
      
       const handleSubmit = async (e) => {
         e.preventDefault();
@@ -21,7 +21,7 @@ const LoginComponent = () => {
               const data = await response;
               setAuthHeader(response.data.token);
               console.log('Login successful', data);
-              navigate("/");
+              navigate("/")
 
           } else {
               setAuthHeader(null);
@@ -34,6 +34,15 @@ const LoginComponent = () => {
       }
     
       }
+      //If token is present, prevent from going back to login page
+      useEffect(()=>{
+          let token = getAuthToken()
+          if(token !==null){
+            navigate("/")
+          }
+       
+      },[]);
+      
     return (
         <>
           <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
