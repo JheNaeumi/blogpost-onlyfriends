@@ -9,7 +9,7 @@ const LoginComponent = () => {
       const navigate = useNavigate();
       const [login, setLogin] = useState('');
       const [password, setPassword] = useState('');
-     
+      const [isAuth, setisAuth] = useState(false);
       const handleSubmit = async (e) => {
         e.preventDefault();
        
@@ -37,12 +37,16 @@ const LoginComponent = () => {
       //If token is present, prevent from going back to login page
       useEffect(()=>{
           let token = getAuthToken()
-          if(token !==null){
+          if(token !==null)
+          {
+            setisAuth(true)
             navigate("/")
           }
        
       },[]);
-      
+      if(isAuth){
+        return null;
+      }
     return (
         <>
           <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">

@@ -10,7 +10,7 @@ const BlogpostComponent = () => {
   
   const [isOpen, setIsOpen] = useState(false);
   const [isFixed, setIsFixed] = useState(false);
-
+  const [isAuth, setisAuth] = useState(false)
   useEffect(() => {
    
           
@@ -21,6 +21,7 @@ const BlogpostComponent = () => {
           }).then(response => {
               if (response.status == 200) {
                   console.log("Successful")
+                  setisAuth(true)
                   return response.json()
               }else{
                 console.log("reponse error")
@@ -56,7 +57,9 @@ const BlogpostComponent = () => {
       const toggleSidebar = () => {
         setIsOpen(!isOpen);
       }
-  
+      if(!isAuth){
+        return null;
+      }
         
   const people = [{
       name: 'Leslie Alexander',
