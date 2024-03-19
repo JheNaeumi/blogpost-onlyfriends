@@ -11,9 +11,7 @@ const BlogpostComponent = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isFixed, setIsFixed] = useState(false);
   const [isAuth, setisAuth] = useState(false)
-  useEffect(() => {
-   
-          
+  useEffect(() => { 
           //TODO: Replace with a service function
           fetch("http://localhost:8080/messages", {
               method: "GET",
@@ -56,6 +54,10 @@ const BlogpostComponent = () => {
     
       const toggleSidebar = () => {
         setIsOpen(!isOpen);
+      }
+      const logOut = async => {
+        setAuthHeader(null)
+        navigate('/login')
       }
       if(!isAuth){
         return null;
@@ -154,51 +156,61 @@ const BlogpostComponent = () => {
   
   return (
     <>  
-      <div className="flex h-screen relative ">
+      <div className="flex h-screen relative">
        
-        <aside className={`bg-white border-r dark:bg-gray-800 dark:border-gray-600 transition-all duration-600 ease-in-out  ${isOpen ? 'block' : 'hidden'} ${isFixed ? 'fixed top-0 left-0 h-full w-64' : 'flex flex-col w-64'} ${isFixed ? 'z-50' : ''}`}>
-          {/*TODO: Add an exit button for the sidebar*/}
-          <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 end-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"onClick={toggleSidebar} >
-            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-            <span class="sr-only">Close menu</span>
-        </button>
-          <div className="flex items-center justify-center py-16 h-20 border-b dark:border-gray-600">
-            <img src={jprofile} alt="Profile" className="w-12 h-12 rounded-full" />
+        <div className={`h-full bg-slate-300 drop-shadow-xl border-r rounded-lg dark:bg-gray-800 dark:border-gray-600 transition-all duration-600 ease-in-out  ${isOpen ? 'block' :'hidden' } ${isFixed ? 'fixed top-0 left-0  w-64' : 'flex flex-col w-64'} ${isFixed ? 'z-50' : ''}`}>
+           {/*TODO: Add an exit button for the sidebar*/}
+          <div className={`${isFixed? 'block':'hidden'}`}>
+            <button type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 end-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"onClick={toggleSidebar} >
+              <svg aria-hidden="true" className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
+              <span className="sr-only">Close menu</span>
+            </button>
+          </div>
+          <div className="flex items-center justify-center py-12 h-40 dark:border-gray-600">
+            <img src={jprofile} alt="Profile" className="w-24 h-24 rounded-full" />
           </div>
           
-          <div className="overflow-y-auto h-full">
-            <a href="#" className="flex items-center py-4 border-b dark:border-gray-600">
-                <svg className="w-6 h-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
-                Dashboard
-            </a>
-            <a href="#" className="flex items-center py-4 border-b dark:border-gray-600">
-                <svg className="w-6 h-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
-                Profile
-            </a>
-            <a href="#" className="flex items-center py-4 border-b dark:border-gray-600">
-                <svg className="w-6 h-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
-                Log Out
-            </a>
+          <div className="overflow-y-auto">
+            <ul className="space-y-8 font-medium">
+            <li>
+                <a href="" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                  <svg className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
+                      <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z"/>
+                      <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z"/>
+                  </svg>
+                  <span className="ms-3">Dashboard</span>
+                </a>
+            </li>  
+            <li>
+                <a href="" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                  <svg className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                      <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
+                  </svg>
+                  <span className="flex-1 ms-3 whitespace-nowrap">Profile</span>
+                </a>
+            </li>
+            <li>
+                <a href="" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"onClick={logOut}>
+                  <svg className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 16" >
+                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 8h11m0 0L8 4m4 4-4 4m4-11h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"/>
+                  </svg>
+                  <span className="flex-1 ms-3 whitespace-nowrap">Sign Out</span>
+                </a>
+            </li>
+            </ul>
             {/* Add more sidebar links as needed */}
           </div>
-          <div className="flex items-center justify-center h-20 border-t dark:border-gray-600">
-          {/* Add your footer content here */}
-          </div>
-        </aside>
+          {/* <div className="flex items-center justify-center h-20 border-t dark:border-gray-600">
+          </div> */}
+        </div>
         {/* Main content */}
         <div className="flex flex-col flex-1">
          
-          <div className={`bg-white dark:bg-gray-900 ${isOpen&&isFixed? 'opacity-50': 'bg-white'}`}>
+          <div className={` h-full overflow-y-auto bg-slate-50 dark:bg-gray-900 ${isOpen&&isFixed? 'opacity-50': ''}`}>
             <div className="py-8 px-4 mx-auto max-w-screen lg:py-16 lg:px-6"> 
               <button onClick={toggleSidebar} className="block md:hidden py-2">
-                <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
+                <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                  <path clipRule="evenodd" fillRule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
                 </svg>
               </button>    
               <div className="mx-auto max-w-screen-sm text-center lg:mb-16 mb-8 ">
