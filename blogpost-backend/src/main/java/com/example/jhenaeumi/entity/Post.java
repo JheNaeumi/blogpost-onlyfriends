@@ -1,39 +1,47 @@
 package com.example.jhenaeumi.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "Post")
+@Table(name = "post")
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @Column( name = "post_title", length = 100, nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
-    private String body;
+    @Column(name = "post_content", length=2000)
+    private String postContent;
 
-    private LocalDateTime createdAt;
+    @Column(name = "post_image")
+    private String postImage;
 
-    private LocalDateTime updatedAt;
+    @Column(name = "post_date")
+    private Date postCreatedDate;
 
-    private String imageFilePath;
 
-    @NotNull
     @ManyToOne
-    @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false)
-    Account account;
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @ManyToOne
+    private User user;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private Set<Comment> comments= new HashSet<>();
+
 
 }
