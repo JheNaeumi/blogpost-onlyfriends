@@ -42,7 +42,7 @@ public class WebSecurityConfig {
                 HttpHeaders.CONTENT_TYPE
         ));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/messages", configuration);
+        source.registerCorsConfiguration("/**", configuration);
         return source;
      }
     private final UserAuthenticationProvider userAuthenticationProvider;
