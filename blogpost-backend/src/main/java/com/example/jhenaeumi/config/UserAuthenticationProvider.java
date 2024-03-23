@@ -5,7 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.jhenaeumi.dto.UserDto;
-import com.example.jhenaeumi.service.UserService;
+import com.example.jhenaeumi.service.impl.UserServiceImpl;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -24,7 +24,7 @@ public class UserAuthenticationProvider {
     @Value("${security.jwt.token.secret-key:secret-key}")
     private String secretKey;
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     @PostConstruct
     protected void init() {

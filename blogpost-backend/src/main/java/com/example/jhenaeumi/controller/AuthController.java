@@ -4,7 +4,7 @@ import com.example.jhenaeumi.config.UserAuthenticationProvider;
 import com.example.jhenaeumi.dto.CredentialsDto;
 import com.example.jhenaeumi.dto.SignUpDto;
 import com.example.jhenaeumi.dto.UserDto;
-import com.example.jhenaeumi.service.UserService;
+import com.example.jhenaeumi.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ import java.net.URI;
 @RequiredArgsConstructor
 @RestController
 public class AuthController {
-    private final UserService userService;
+    private final UserServiceImpl userService;
     private final UserAuthenticationProvider userAuthenticationProvider;
     @PostMapping("/login")
     public ResponseEntity<UserDto> login(@RequestBody @Valid CredentialsDto credentialsDto) {
