@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 
 import java.util.Date;
@@ -15,19 +16,21 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Table(name = "post")
+@ToString
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column( name = "post_title", length = 100, nullable = false)
-    private String title;
+    private String postTitle;
 
     @Column(name = "post_content", length=2000)
     private String postContent;
 
-    @Column(name = "post_image")
-    private String postImage;
+//    TODO: add image in post
+//    @Column(name = "post_image")
+//    private String postImage;
 
     @Column(name = "post_date")
     private Date postCreatedDate;
