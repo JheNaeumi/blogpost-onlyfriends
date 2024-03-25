@@ -7,8 +7,10 @@ import com.example.jhenaeumi.dto.UserDto;
 import com.example.jhenaeumi.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,6 +33,12 @@ public class AuthController {
         UserDto createdUser = userService.register(user);
         createdUser.setToken(userAuthenticationProvider.createToken(createdUser));
         return ResponseEntity.created(URI.create("/users/" + createdUser.getId())).body(createdUser);
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<UserDto> updateProfile(@RequestBody @Valid SignUpDto user){
+        UserDto updatedUser = userService.updateUserProfile(user);
+        return new ResponseEntity<>(updatedUser, HttpStatus.CREATED);
     }
 
 }
