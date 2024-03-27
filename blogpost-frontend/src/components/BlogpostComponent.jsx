@@ -4,8 +4,7 @@ import { getAuthToken,setAuthHeader } from "../service/AuthService"
 import { useNavigate } from "react-router-dom";
 import jprofile from "../assets/jprofile.png"
 const BlogpostComponent = () => {
-  
-  const [backendResponse, setBackendResponse] = useState("Nothing");
+ 
   const navigate = useNavigate();
   
   const [isOpen, setIsOpen] = useState(false);
@@ -13,7 +12,7 @@ const BlogpostComponent = () => {
   const [isAuth, setisAuth] = useState(false)
   useEffect(() => { 
           //TODO: Replace with a service function
-          fetch("http://localhost:8080/messages", {
+          fetch("http://localhost:8080/api/getAllPost", {
               method: "GET",
               headers: {'Authorization': `Bearer ${getAuthToken()}`}
           }).then(response => {
@@ -28,8 +27,7 @@ const BlogpostComponent = () => {
                   
               } 
           }).then(data => {
-              setBackendResponse(data.message);
-              
+              //TODO: map data into array
           }).catch(()=>{
             setAuthHeader(null)
             navigate('/login')
@@ -223,7 +221,6 @@ const BlogpostComponent = () => {
                     <div className="flex justify-between items-center mb-5 text-gray-500">
                         <span className="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-primary-200 dark:text-primary-800">
                             <svg className="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path></svg>
-                        {backendResponse}
                         </span>
                         <span className="text-sm">{person.lastSeen}</span>
                     </div>
