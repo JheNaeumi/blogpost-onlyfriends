@@ -12,75 +12,59 @@ const BlogpostComponent = () => {
   const [isFixed, setIsFixed] = useState(false);
   const [isAuth, setisAuth] = useState(false)
   const [mappedContent, mapContent] = useState([])
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [alltotalPages, setTotalPages] = useState(0);
   useEffect(() => { 
-          //TODO: Replace with a service function
-          fetch(`http://localhost:8080/api/getAllPost`, {
-              method: "GET",
-              headers: {'Authorization': `Bearer ${getAuthToken()}`}
-          }).then(response => {
-              if (response.status == 200) {
-                  console.log("Successful")
-                  setisAuth(true)
-                  return response.json()
-                 
-              }else{
-                console.log("reponse error")
-                  setAuthHeader(null)
-                  navigate('/login')
-                  
-              } 
-          }).then(data => {
-              //TODO: map data into array
-              mapContent(data.content)
-              
-          }).catch(()=>{
-            setAuthHeader(null)
-            navigate('/login')
-          })
-         
+          //gePostData
           fetchData(currentPage);
-          const handleResize = () => {
-            setIsFixed(window.innerWidth < 768);
-            setIsOpen(window.innerWidth >= 768)
-          };
-      
+
           // Initial call to set initial state
           handleResize();
-      
           window.addEventListener('resize', handleResize);
-      
           return () => {
             window.removeEventListener('resize', handleResize);
           };
       
       }, []);
-    
+      
+      //checksWindowSizeForSideBar
+      const handleResize = () => {
+        setIsFixed(window.innerWidth < 768);
+        setIsOpen(window.innerWidth >= 768)
+      };
+      //toggleSidebar
       const toggleSidebar = () => {
         setIsOpen(!isOpen);
       }
+      //Logging out
       const logOut = async => {
         setAuthHeader(null)
         navigate('/login')
       }
+      //changePage
       const handlePageChange = (page) => {
-        setCurrentPage(page);
+        setCurrentPage(page)
+        fetchData(page)
       };
+      //getPostData
       const fetchData = async (page) => {
+        //TODO: Make it as a Service
         try {
           const response = await axios.get(`http://localhost:8080/api/getAllPost?pageNumber=${page}`, {
-            method: "GET",
-            headers: {'Authorization': `Bearer ${getAuthToken()}`}
+          headers: {'Authorization': `Bearer ${getAuthToken()}`}
         })
-        //setData(response.data.items); // Assuming API returns an array of items
-        setTotalPages(response.data.totalPages);
+        setisAuth(true)
         mapContent(response.data.content)
-        console.log("success")
+        setTotalPages(response.data.totalPages-1)
+        //console.log(response.data.content )
+        //console.log("success")
         } catch (error) {
-          console.error('Error fetching data:', error);
+          console.error('Error fetching data:');
+          setAuthHeader(null)
+          navigate('/login')
         }
       };
+      //if token is not present
       if(!isAuth){
         return null;
       }
@@ -88,7 +72,6 @@ const BlogpostComponent = () => {
   return (
     <>  
       <div className="flex h-screen relative">
-       
         <div className={`h-full bg-slate-300 drop-shadow-xl border-r rounded-lg dark:bg-gray-800 dark:border-gray-600 transition-all duration-600 ease-in-out  ${isOpen ? 'block' :'hidden' } ${isFixed ? 'fixed top-0 left-0  w-64' : 'flex flex-col w-64'} ${isFixed ? 'z-50' : ''}`}>
            {/*TODO: Add an exit button for the sidebar*/}
           <div className={`${isFixed? 'block':'hidden'}`}>
@@ -139,17 +122,35 @@ const BlogpostComponent = () => {
         <div className="flex flex-col flex-1">
          
           <div className={` h-full overflow-y-auto bg-slate-50 dark:bg-gray-900 ${isOpen&&isFixed? 'opacity-50': ''}`}>
-            <div className="py-8 px-4 mx-auto max-w-screen lg:py-16 lg:px-6"> 
+            <div className="py-2 px-4 mx-auto max-w-screen lg:py-4 lg:px-6"> 
               <button onClick={toggleSidebar} className="block md:hidden py-2">
                 <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                   <path clipRule="evenodd" fillRule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
                 </svg>
               </button>    
-              <div className="mx-auto max-w-screen-sm text-center lg:mb-16 mb-8 ">
+              {/* <div className="mx-auto max-w-screen-sm text-center lg:mb-16 mb-8 ">
                   <h2 className="mb-4 text-3xl lg:text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Our Blog</h2>
                   <p className="font-light text-gray-500 sm:text-xl dark:text-gray-400">We use an agile approach to test assumptions and connect with the needs of your audience early and often.</p>
+              </div> */}
+              <div class="heading text-center font-bold text-2xl m-5 text-gray-800">New Post</div>
+              <div class="editor mx-auto w-10/12 flex flex-col text-gray-800 border border-gray-300 p-4 shadow-lg max-w-2xl rounded-lg">
+                <input class="title bg-gray-100 border border-gray-300 p-2 mb-4 outline-none" spellcheck="false" placeholder="Title" type="text"/>
+                <textarea class="description bg-gray-100 sec p-3 h-40 border border-gray-300 outline-none" spellcheck="false" placeholder="Describe everything about this post here"></textarea>
+                
+              
+                <div class="icons flex text-gray-500 m-2">
+                  <svg class="mr-2 cursor-pointer hover:text-gray-700 border rounded-full p-1 h-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                  <svg class="mr-2 cursor-pointer hover:text-gray-700 border rounded-full p-1 h-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <svg class="mr-2 cursor-pointer hover:text-gray-700 border rounded-full p-1 h-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
+                  <div class="count ml-auto text-gray-400 text-xs font-semibold">0/300</div>
+                </div>
+              
+                <div class="buttons flex">
+                  <div class="btn border border-gray-300 p-1 px-4 font-semibold cursor-pointer text-gray-500 ml-auto">Cancel</div>
+                  <div class="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500">Post</div>
+                </div>
               </div>
-              <div className="grid gap-8 lg:grid-cols-2">
+              <div className="grid gap-8 lg:grid-cols-2 pt-12">
                 {mappedContent.map((post) =>
                 <article key={post.id}className="p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
                     <div className="flex justify-between items-center mb-5 text-gray-500">
@@ -157,6 +158,7 @@ const BlogpostComponent = () => {
                             <svg className="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path>
                            
                             </svg>
+                            {post.category.categoryTitle}
                         </span>
                         <span className="text-sm">{new Date(post.postCreatedDate).toLocaleString()}</span>
                     </div>
@@ -170,7 +172,7 @@ const BlogpostComponent = () => {
                             </span>
                         </div>
                         <span className="flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline">
-                        {post.category.categoryTitle}
+                        
                         </span>
                     </div>
                 </article>
@@ -178,63 +180,17 @@ const BlogpostComponent = () => {
                          
               </div>  
             </div> 
-          </div>
-          
-          <div>
-            <button disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)}>
+          </div> 
+          <div className="flex ">
+            <button disabled={currentPage === 0} onClick={() => handlePageChange(currentPage - 1)} className="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
               Previous
             </button>
-            <span>{currentPage}</span>
-            <button disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)}>
+            <button disabled={currentPage === alltotalPages} onClick={() => handlePageChange(currentPage + 1)} className="flex items-center justify-center px-4 h-10 ms-3 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
               Next
             </button>
           </div>
-          {/* <nav aria-label="Page navigation example">
-            <ul class="list-style-none flex">
-              <li>
-                <button
-                  class="relative block rounded bg-transparent px-3 py-1.5 text-sm text-surface transition duration-300 hover:bg-neutral-100 focus:bg-neutral-100 focus:text-primary-700 focus:outline-none active:bg-neutral-100 active:text-primary-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 dark:focus:text-primary-500 dark:active:bg-neutral-700 dark:active:text-primary-500"
-                
-                  aria-label="Previous" disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)}>
-                  <span aria-hidden="true">&laquo;</span>
-                </button>
-              </li>
-              <li>
-                <a
-                  class="relative block rounded bg-transparent px-3 py-1.5 text-sm text-surface transition duration-300 hover:bg-neutral-100 focus:bg-neutral-100 focus:text-primary-700 focus:outline-none active:bg-neutral-100 active:text-primary-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 dark:focus:text-primary-500 dark:active:bg-neutral-700 dark:active:text-primary-500"
-                  href="#"
-                  >1</a
-                >
-              </li>
-              <li aria-current="page">
-                <a
-                  class="relative block rounded bg-transparent px-3 py-1.5 text-sm text-surface transition duration-300 hover:bg-neutral-100 focus:bg-neutral-100 focus:text-primary-700 focus:outline-none active:bg-neutral-100 active:text-primary-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 dark:focus:text-primary-500 dark:active:bg-neutral-700 dark:active:text-primary-500"
-                  href="#"
-                  >2</a
-                >
-              </li>
-              <li>
-                <a
-                  class="relative block rounded bg-transparent px-3 py-1.5 text-sm text-surface transition duration-300 hover:bg-neutral-100 focus:bg-neutral-100 focus:text-primary-700 focus:outline-none active:bg-neutral-100 active:text-primary-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 dark:focus:text-primary-500 dark:active:bg-neutral-700 dark:active:text-primary-500"
-                  href="#"
-                  >3</a
-                >
-              </li>
-              <li>
-                <button
-                  class="relative block rounded bg-transparent px-3 py-1.5 text-sm text-surface transition duration-300 hover:bg-neutral-100 focus:bg-neutral-100 focus:text-primary-700 focus:outline-none active:bg-neutral-100 active:text-primary-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 dark:focus:text-primary-500 dark:active:bg-neutral-700 dark:active:text-primary-500"
-                 
-                  aria-label="Next"  disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)}
-                  ><span aria-hidden="true">&raquo;</span>
-                </button>
-              </li>
-            </ul>
-          </nav> */}
         </div>
       </div>
-  
-
-    
     </>
     
       
