@@ -1,68 +1,81 @@
 import { postRegistration } from "../service/RegisterService";
 import { useState,useEffect } from "react";
-import { setAuthHeader } from "../service/AuthService";
+import { getAuthToken, setAuthHeader } from "../service/AuthService";
 import { useNavigate} from "react-router-dom";
 
 const RegistrationComponent = () => {
-    let navigate = useNavigate();
+    const navigate = useNavigate();
+    const [isAuth, setisAuth] = useState(false);
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        login: '',
-        password: '',
+      firstName: '',
+      lastName: '',
+      login: '',
+      password: '',
       
-      });
-      const [formData_1, setFormData_1] = useState({
-        repeatPassword: '',
-        agreeTerms: false,
-      })
-      const [passwordError, setPasswordError] = useState('');
-      const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-    
-        // Special handling for checkbox inputs
-        const inputValue = type === 'checkbox' ? checked : value;
-    
-        setFormData((prevData) => ({
-          ...prevData,
-          [name]: inputValue,
-        }));
-        setFormData_1((prevData) => ({
-          ...prevData,
-          [name]: inputValue,
-        }));
-      };
-    
-      const handleSubmit = async (e) => {
-        e.preventDefault();
-    
-        try {
-            
-            if (formData.password !== formData_1.repeatPassword) {
-                setPasswordError('Passwords do not match');
-                return;
-            }
-            else{
-              
-                const response = await postRegistration(formData)
-                if (response.status === 200) {
-                  const data = await response;
-                  setAuthHeader(response.data.token);
-                  console.log('Login successful', data);
-                }else {
-                  setAuthHeader(null);
-                  console.error('Login failed', response.statusText);
-                  setFormData('')
-                  setFormData_1('')
-                }
-
-              }
-           
-        } catch (error) {
-          // Handle registration error (e.g., show an error message)
-          console.error('Registration failed', error);
-        }
+    });
+    const [formData_1, setFormData_1] = useState({
+      repeatPassword: '',
+      agreeTerms: false,
+    })
+    const [passwordError, setPasswordError] = useState('');
+    const handleChange = (e) => {
+      const { name, value, type, checked } = e.target;
+  
+      // Special handling for checkbox inputs
+      const inputValue = type === 'checkbox' ? checked : value;
+  
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: inputValue,
+      }));
+      setFormData_1((prevData) => ({
+        ...prevData,
+        [name]: inputValue,
+      }));
+    };
+  
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+  
+    try {
+      if (formData.password !== formData_1.repeatPassword) {
+          setPasswordError('Passwords do not match');
+          return;
       }
+      else{
+        
+          const response = await postRegistration(formData)
+          if (response.status === 200) {
+            const data = await response;
+            setAuthHeader(response.data.token);
+            console.log('Login successful', data);
+            navigate("/")
+          }else {
+            setAuthHeader(null);
+            console.error('Login failed', response.statusText);
+            setFormData('')
+            setFormData_1('')
+          }
+
+        }
+        
+    } catch (error) {
+      // Handle registration error (e.g., show an error message)
+      console.error('Registration failed', error);
+    }
+    }
+    useEffect(()=>{
+        let token = getAuthToken()
+        if(token !==null)
+        {
+          setisAuth(true)
+          navigate("/")
+        }
+     
+    },[]);
+    if(isAuth){
+      return null;
+    }
     return (
         <>
         <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
