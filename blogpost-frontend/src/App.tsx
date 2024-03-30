@@ -9,19 +9,21 @@ import RegistrationComponent from './components/RegistrationComponent'
 import BlogpostComponent from './components/BlogpostComponent'
 import ProfileComponent from './components/ProfileComponent'
 
-import React from 'react'
+import React, { useEffect,useLayoutEffect, useState} from 'react'
 import AdminComponent from './components/AdminComponent'
+
+import { getAuthToken } from './service/AuthService'
 function App() {
-  
+ 
   return (
     <>
     <BrowserRouter>
       <Routes>
           <Route path='/login' element={<LoginComponent/> }></Route>
           <Route path='/registration' element={<RegistrationComponent/> }></Route>
-          <Route path='/profile' element={<ProfileComponent/> }></Route>
-          <Route path='/' element={<BlogpostComponent/> }></Route>
-          <Route path='/admin' element={<AdminComponent/>}></Route>
+            <Route path='/profile' element={getAuthToken!==null&&<ProfileComponent/> }></Route>
+            <Route path='/' element={getAuthToken!==null&&<BlogpostComponent/> }></Route>
+            <Route path='/admin' element={getAuthToken!==null&&<AdminComponent/>}></Route>
         </Routes>
     </BrowserRouter>
     </>
