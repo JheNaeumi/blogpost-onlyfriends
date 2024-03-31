@@ -1,6 +1,12 @@
 package com.example.jhenaeumi.service.impl;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.example.jhenaeumi.config.UserAuthenticationProvider;
 import com.example.jhenaeumi.dto.CredentialsDto;
+import com.example.jhenaeumi.dto.PostUserDto;
 import com.example.jhenaeumi.dto.SignUpDto;
 import com.example.jhenaeumi.dto.UserDto;
 import com.example.jhenaeumi.entity.User;
@@ -9,22 +15,38 @@ import com.example.jhenaeumi.exceptions.AppException;
 import com.example.jhenaeumi.mappers.UserMapper;
 import com.example.jhenaeumi.repository.UserRepo;
 import com.example.jhenaeumi.service.UserService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
+import java.util.Base64;
 import java.util.Optional;
+
+import org.springframework.http.HttpHeaders;
+
 
 @RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
+    @Value("${security.jwt.token.secret-key:secret-key}")
+    private String secretKey;
+
     private final UserRepo userRepository;
 
     private final PasswordEncoder passwordEncoder;
 
     private final UserMapper userMapper;
+
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public UserDto login(CredentialsDto credentialsDto) {
@@ -61,7 +83,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto updateUserProfile(SignUpDto signUpDto) {
+    public UserDto updateUserProfile(String logintoken, SignUpDto signUpDto) {
+        String login = validateToken(logintoken);
+        if(!login.equals(signUpDto.getLogin())){
+            throw new AppException("Unauthorized", HttpStatus.UNAUTHORIZED);
+        }
+
         User user = userRepository.findByLogin(signUpDto.getLogin())
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
 
@@ -71,4 +98,28 @@ public class UserServiceImpl implements UserService {
         User savedUser = userRepository.save(user);
         return userMapper.toUserDto(savedUser);
     }
+
+    @Override
+    public PostUserDto getUserProfile(String logintoken) {
+        String login = validateToken(logintoken);
+        User user = userRepository.findByLogin(login)
+                .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
+
+        return modelMapper.map(user, PostUserDto.class);
+    }
+
+    @Override
+    public String validateToken(String logintoken) {
+        String[] authElements = logintoken.split(" ");
+        String login = authElements[1];
+        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+        Algorithm algorithm = Algorithm.HMAC256(secretKey);
+
+        JWTVerifier verifier = JWT.require(algorithm)
+                .build();
+
+        DecodedJWT decoded = verifier.verify(login);
+        return decoded.getSubject();
+    }
+
 }
