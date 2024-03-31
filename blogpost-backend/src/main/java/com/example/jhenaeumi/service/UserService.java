@@ -1,6 +1,7 @@
 package com.example.jhenaeumi.service;
 
 import com.example.jhenaeumi.dto.CredentialsDto;
+import com.example.jhenaeumi.dto.PostUserDto;
 import com.example.jhenaeumi.dto.SignUpDto;
 import com.example.jhenaeumi.dto.UserDto;
 
@@ -11,5 +12,9 @@ public interface UserService {
 
     UserDto findByLogin(String login);
 
-    UserDto updateUserProfile(SignUpDto signUpDto);
+    UserDto updateUserProfile(String logintoken, SignUpDto signUpDto);
+
+    PostUserDto getUserProfile(String logintoken);
+
+    String validateToken(String logintoken);
 }
