@@ -35,10 +35,6 @@ public class AuthController {
         return ResponseEntity.ok(createdUser);
     }
 
-    @PutMapping("/profile")
-    public ResponseEntity<UserDto> updateProfile(@RequestBody @Valid SignUpDto user){
-        UserDto updatedUser = userService.updateUserProfile(user);
-        return new ResponseEntity<>(updatedUser, HttpStatus.CREATED);
-    }
+
 
 }
