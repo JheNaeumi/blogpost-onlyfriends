@@ -20,7 +20,7 @@ const LoginComponent = () => {
           if (response.status === 200) {
               const data = await response;
               setAuthHeader(response.data.token);
-              console.log('Login successful', data);
+              // console.log('Login successful', data);
               navigate("/")
 
           } else {
