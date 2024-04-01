@@ -15,6 +15,7 @@ import com.example.jhenaeumi.exceptions.AppException;
 import com.example.jhenaeumi.mappers.UserMapper;
 import com.example.jhenaeumi.repository.UserRepo;
 import com.example.jhenaeumi.service.UserService;
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -48,6 +49,11 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @PostConstruct
+    protected void init() {
+        // this is to avoid having the raw secret key available in the JVM
+        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+    }
     @Override
     public UserDto login(CredentialsDto credentialsDto) {
         User user = userRepository.findByLogin(credentialsDto.getLogin())
@@ -112,7 +118,6 @@ public class UserServiceImpl implements UserService {
     public String validateToken(String logintoken) {
         String[] authElements = logintoken.split(" ");
         String login = authElements[1];
-        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
 
         JWTVerifier verifier = JWT.require(algorithm)
