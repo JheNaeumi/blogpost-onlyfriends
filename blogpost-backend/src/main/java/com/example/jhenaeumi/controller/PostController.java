@@ -17,10 +17,6 @@ public class PostController {
     @Autowired
     PostService postService;
 
-    private PostDto postByid;
-
-    private PostDto updatePost;
-
     @PostMapping("/user/{userId}/category/{categoryId}/posts")
     public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto, @PathVariable Long userId, @PathVariable Long categoryId){
         PostDto createdPost = this.postService.createPost(postDto, userId, categoryId);

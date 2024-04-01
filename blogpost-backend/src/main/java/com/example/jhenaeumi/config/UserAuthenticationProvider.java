@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
+
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
@@ -28,6 +29,7 @@ public class UserAuthenticationProvider {
 
     @PostConstruct
     protected void init() {
+
         // this is to avoid having the raw secret key available in the JVM
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
