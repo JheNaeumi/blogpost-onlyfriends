@@ -5,6 +5,7 @@ import com.example.jhenaeumi.dto.PostResponseDto;
 import com.example.jhenaeumi.entity.Category;
 import com.example.jhenaeumi.entity.Post;
 import com.example.jhenaeumi.entity.User;
+import com.example.jhenaeumi.exceptions.AppException;
 import com.example.jhenaeumi.repository.CategoryRepo;
 import com.example.jhenaeumi.repository.PostRepo;
 import com.example.jhenaeumi.repository.UserRepo;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -55,7 +57,7 @@ public class PostServiceImpl implements PostService {
     public PostResponseDto getAllPost(Integer pageNumber, Integer pageSize, String sortBy) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy).ascending());
 
-        Page<Post> pageOfPost = this.postRepo.findAll(pageable);
+        pageOfPost = this.postRepo.findAll(pageable);
 
         List<Post> findAllPost = pageOfPost.getContent();
 
@@ -70,6 +72,29 @@ public class PostServiceImpl implements PostService {
         postResponseDto.setTotalPages(pageOfPost.getTotalPages());
         postResponseDto.setLastPage(pageOfPost.isLast());
         return postResponseDto;
+    }
+
+    @Override
+    public List<PostDto> getAllPostByUser(String name) {
+        User user = userRepo.findByFirstName(name).orElseThrow(() -> new AppException("Unknown UserName", HttpStatus.NOT_FOUND));
+
+        List<Post> listofPostByUser = postRepo.findByUser(user);
+
+        List<PostDto> postDto = listofPostByUser.stream().map((post)-> modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
+        return postDto;
+    }
+
+    @Override
+    public void deletePost(Long userId,Long postId) {
+        Post post = postRepo.findById(postId).orElseThrow(() -> new AppException("Unknown Post", HttpStatus.NOT_FOUND));
+        User user = post.getUser();
+        if(user.getId().equals(userId))
+        {
+            postRepo.delete(post);
+        }
+        else{
+            throw new AppException("Unauthorize Deletion", HttpStatus.UNAUTHORIZED);
+        }
     }
 
 
