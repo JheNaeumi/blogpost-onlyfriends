@@ -10,6 +10,7 @@ import com.example.jhenaeumi.repository.CategoryRepo;
 import com.example.jhenaeumi.repository.PostRepo;
 import com.example.jhenaeumi.repository.UserRepo;
 import com.example.jhenaeumi.service.PostService;
+import org.mapstruct.control.MappingControl;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -76,10 +77,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostDto> getAllPostByUser(String name) {
-        User user = userRepo.findByFirstName(name).orElseThrow(() -> new AppException("Unknown UserName", HttpStatus.NOT_FOUND));
-
+        User user = userRepo.findByfirstName(name).orElseThrow(()-> new AppException("Unknown Post", HttpStatus.NOT_FOUND));
         List<Post> listofPostByUser = postRepo.findByUser(user);
-
         List<PostDto> postDto = listofPostByUser.stream().map((post)-> modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
         return postDto;
     }
