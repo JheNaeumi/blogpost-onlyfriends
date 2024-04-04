@@ -1,4 +1,4 @@
-import { postLogin } from "../service/LoginService"
+import { postLogin } from "../service/AuthenticationService";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 

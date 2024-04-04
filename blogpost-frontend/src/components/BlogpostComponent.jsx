@@ -3,8 +3,7 @@ import { useEffect, useState } from "react"
 import { getAuthToken,setAuthHeader } from "../service/AuthService"
 import { useNavigate } from "react-router-dom";
 import jprofile from "../assets/jprofile.png"
-import axios from "axios";
-import { getProfile } from "../service/RegisterService";
+import { getPostResponse } from "../service/PostService";
 const BlogpostComponent = () => {
  
   const navigate = useNavigate();
@@ -38,7 +37,7 @@ const BlogpostComponent = () => {
         setIsOpen(!isOpen);
       }
       //Logging out
-      const logOut = async => {
+      const logOut = () => {
         setAuthHeader(null)
         navigate('/login')
       }
@@ -51,15 +50,13 @@ const BlogpostComponent = () => {
       const fetchData = async (page) => {
         //TODO: Make it as a Service
         try {
-          const response = await axios.get(`http://localhost:8080/api/post/getAllPost?pageNumber=${page}`, {
-          headers: {'Authorization': `Bearer ${getAuthToken()}`}
-        })
-      
-        setisAuth(true)
-        mapContent(response.data.content)
-        setTotalPages(response.data.totalPages-1)
-        //console.log(response.data.content )
-        //console.log("success")
+          const token = getAuthToken()
+          const response = await getPostResponse(token, page)
+          setisAuth(true)
+          mapContent(response.data.content)
+          setTotalPages(response.data.totalPages-1)
+          //console.log(response.data.content )
+          //console.log("success")
         } catch (error) {
           console.error('Error fetching data:');
           setAuthHeader(null)

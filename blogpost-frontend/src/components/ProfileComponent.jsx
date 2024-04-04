@@ -1,7 +1,5 @@
 import { useState, useEffect, useLayoutEffect } from "react";
-import { updateProfile, getProfile} from "../service/RegisterService";
-
-import { jwtDecode } from 'jwt-decode'
+import { updateProfile, getProfile } from "../service/UserDataService";
 import { getAuthToken } from "../service/AuthService";
 
 
@@ -13,24 +11,26 @@ const ProfileComponent = () => {
       login: '',
       password: '',
       
-    }, []);
+    },[]);
     const [formData_1, setFormData_1] = useState({
-      repeatPassword: '',
-    })
+      repeatPassword: ''
+    },[])
     const [passwordError, setPasswordError] = useState('');
     
     useEffect(() =>{
-      getUserProfileData()
+      getUserProfileData();
 
     },[])
     
     const getUserProfileData = async() =>  {
-    
-      const response = await getProfile(token)
-      if(response.status === 200){
-        setFormData(response.data)
+      try {
+        const response = await getProfile(token)
+        if(response.status === 200){
+          setFormData(response.data)
       }
-    
+      } catch (error) {
+        console.log(error)
+      }
     }
 
       const handleSubmit = async (e) => {
@@ -80,25 +80,25 @@ const ProfileComponent = () => {
         <div className="mb-5">
             <label for="firstName" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">FirstName</label>
             <input type="firstName" id="firstName" name="firstName" 
-            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"  required value={formData.firstName} onChange={(e) => setFormData({...formData, firstName:e.target.value})} />
+            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"  required value={formData.firstName || ''} onChange={(e) => setFormData({firstName:e.target.value})} />
         </div>
         <div className="mb-5">
             <label for="lastName" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">LastName</label>
             <input type="lastName" id="lastName" name="lastName" 
-            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"  required value={formData.lastName} onChange={(e) => setFormData({...formData, lastName:e.target.value})} />
+            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"  required value={formData.lastName || ''} onChange={(e) => setFormData({ lastName:e.target.value})} />
         </div>
         <div className="mb-5">
             <label for="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
-            <input type="email" id="email" name="login"
-            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="name@flowbite.com" required value={formData.login} onChange={(e) => setFormData({...formData, login:e.target.value})} />
+            <input type="email" id="" name="login" disabled
+            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="name@flowbite.com" required value={formData.login || ''} onChange={(e) => setFormData({ login:e.target.value})} />
         </div>
         <div className="mb-5">
             <label for="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your password</label>
-            <input type="password" id="password" name="password" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" required value={formData.password} onChange={(e) => setFormData({...formData, password:e.target.value})}/>
+            <input type="password" id="password" name="password" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" required value={formData.password || ''} onChange={(e) => setFormData({ password:e.target.value})}/>
         </div>
         <div className="mb-5">
             <label for="repeatPassword" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Repeat password</label>
-            <input type="password" id="repeatPassword" name="repeatPassword" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" required value={formData_1.repeatPassword} onChange={(e) => setFormData_1({...formData_1, repeatPassword:e.target.value})} />
+            <input type="password" id="repeatPassword" name="repeatPassword" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" required value={formData_1.repeatPassword || ''} onChange={(e) => setFormData_1({ repeatPassword:e.target.value})} />
         </div>
         {passwordError && (
             <div className="mb-5 text-red-600 dark:text-red-400">{passwordError}</div>
