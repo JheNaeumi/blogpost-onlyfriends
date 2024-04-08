@@ -1,17 +1,19 @@
 import axios from "axios";
 
-export const getPostResponse = () => {
-    return null;
+const REST_API_BASE_URL ='http://localhost:8080/api/user';
+
+
+export const updateProfile = (token, userDetails) => {
+    return axios.put(REST_API_BASE_URL+"/profile/update", userDetails,{
+      headers: {'Authorization': `Bearer ${token}`}
+    })
 }
 
-export const getPostUser = () => {
-    return null;
+export const getProfile = (token) => {
+   return axios.get(REST_API_BASE_URL+"/profile", {
+    headers: {'Authorization': `Bearer ${token}`}
+  })
 }
 
-export const postContent = () => {
 
-}
 
-export const postComment = () => {
-    
-}
