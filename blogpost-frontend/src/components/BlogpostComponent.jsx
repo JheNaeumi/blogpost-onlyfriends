@@ -14,6 +14,7 @@ const BlogpostComponent = () => {
   const [mappedContent, mapContent] = useState([])
   const [currentPage, setCurrentPage] = useState(0);
   const [alltotalPages, setTotalPages] = useState(0);
+  const [showComments, setShowComments] = useState(false);
   useEffect(() => { 
           //gePostData
           fetchData(currentPage);
@@ -62,6 +63,9 @@ const BlogpostComponent = () => {
           setAuthHeader(null)
           navigate('/login')
         }
+      };
+      const toggleComments = () => {
+        setShowComments(!showComments);
       };
       //if token is not present
       if(!isAuth){
@@ -149,34 +153,12 @@ const BlogpostComponent = () => {
                   <div class="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500">Post</div>
                 </div>
               </div>
-              <div className="grid gap-8 lg:grid-cols-2 pt-12">
-                {mappedContent.map((post) =>
-                <article key={post.id}className="p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
-                    <div className="flex justify-between items-center mb-5 text-gray-500">
-                        <span className="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-primary-200 dark:text-primary-800">
-                            <svg className="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path>
-                           
-                            </svg>
-                            {post.category.categoryTitle}
-                        </span>
-                        <span className="text-sm">{new Date(post.postCreatedDate).toLocaleString()}</span>
-                    </div>
-                    <h2 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"><a href="#">{post.postTitle}</a></h2>
-                    <p className="mb-5 font-light text-gray-500 dark:text-gray-400">{post.postContent}</p>
-                    <div className="flex flex-wrap justify-between items-center">
-                        <div className="flex items-center space-x-4">
-                            <img className="w-7 h-7 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png" alt="Jese Leos avatar" />
-                            <span className="font-medium dark:text-white">
-                              {post.user.firstName} {post.user.lastName}
-                            </span>
-                        </div>
-                        <span className="flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline">
-                        
-                        </span>
-                    </div>
-                </article>
-                )}
-                         
+              <div className="flex justify-center">
+                <div className="grid gap-8 grid-cols-1 pt-12 px-2 w-2/3 ">
+                {mappedContent.map((post) => (
+                  <Post key={post.id} post={post} />
+                ))}
+                </div>
               </div>  
             </div> 
           </div> 
@@ -194,6 +176,53 @@ const BlogpostComponent = () => {
     
       
   )
+}
+function Post({ post }) {
+  const [showComments, setShowComments] = useState(false);
+
+  const toggleComments = () => {
+    setShowComments(!showComments);
+  };
+
+  return (
+    <article key={post.id} className="p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
+      <div className="flex justify-between items-center mb-5 text-gray-500">
+        <span className="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-primary-200 dark:text-primary-800">
+          <svg className="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path>
+          </svg>
+          {post.category.categoryTitle}
+        </span>
+        <span className="text-sm">{new Date(post.postCreatedDate).toLocaleString()}</span>
+      </div>
+      <h2 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"><a href="#">{post.postTitle}</a></h2>
+      <p className="mb-5 font-light text-gray-500 dark:text-gray-400">{post.postContent}</p>
+      <div className="flex flex-wrap justify-between items-center">
+        <div className="flex items-center space-x-4">
+          <img className="w-7 h-7 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png" alt="Jese Leos avatar" />
+          <span className="font-medium dark:text-white">
+            {post.user.firstName} {post.user.lastName}
+          </span>
+        </div>
+        <button className="flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline" onClick={toggleComments}>
+          Comments
+        </button>
+      </div>
+      {showComments && (
+        <div className="mt-4">
+          <h3 className="text-xl font-semibold mb-2">Comments</h3>
+          {/* Example comment section */}
+          <div className="border-t border-gray-200 pt-4">
+            <div className="flex items-center space-x-4">
+              <img className="w-7 h-7 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png" alt="Jese Leos avatar" />
+              <span className="font-medium dark:text-white">John Doe</span>
+            </div>
+            <p className="mt-2 text-gray-600">This is a comment.</p>
+          </div>
+        </div>
+      )}
+    </article>
+  );
 }
 
 export default BlogpostComponent
