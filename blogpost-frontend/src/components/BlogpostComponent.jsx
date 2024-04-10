@@ -3,7 +3,8 @@ import { useEffect, useState } from "react"
 import { getAuthToken,setAuthHeader } from "../service/AuthService"
 import { useNavigate } from "react-router-dom";
 import jprofile from "../assets/jprofile.png"
-import { getPostResponse } from "../service/PostService";
+import { getPostResponse, postContent } from "../service/PostService";
+import { postComment } from "../service/CommentService";
 const BlogpostComponent = () => {
  
   const navigate = useNavigate();
@@ -14,7 +15,9 @@ const BlogpostComponent = () => {
   const [mappedContent, mapContent] = useState([])
   const [currentPage, setCurrentPage] = useState(0);
   const [alltotalPages, setTotalPages] = useState(0);
-  const [showComments, setShowComments] = useState(false);
+  const [content, setContent] = useState([
+
+  ]) 
   useEffect(() => { 
           //gePostData
           fetchData(currentPage);
@@ -64,9 +67,13 @@ const BlogpostComponent = () => {
           navigate('/login')
         }
       };
-      const toggleComments = () => {
-        setShowComments(!showComments);
-      };
+      const postUserContent = async() => {
+        try{
+
+        }catch(error){
+
+        }
+      }
       //if token is not present
       if(!isAuth){
         return null;
@@ -149,8 +156,7 @@ const BlogpostComponent = () => {
                 </div>
               
                 <div class="buttons flex">
-                  <div class="btn border border-gray-300 p-1 px-4 font-semibold cursor-pointer text-gray-500 ml-auto">Cancel</div>
-                  <div class="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500">Post</div>
+                  <button class="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500">Post</button>
                 </div>
               </div>
               <div className="flex justify-center">
@@ -177,11 +183,25 @@ const BlogpostComponent = () => {
       
   )
 }
+
 function Post({ post }) {
   const [showComments, setShowComments] = useState(false);
+  const [commentText, setCommentText] = useState('');
+  const [comments, setComments] = useState([]);
 
   const toggleComments = () => {
     setShowComments(!showComments);
+  };
+
+  const addComment = () => {
+    if (commentText.trim() !== '') {
+      const newComment = {
+        author: 'John Doe', // You can replace this with the actual author
+        text: commentText,
+      };
+      setComments([...comments, newComment]);
+      setCommentText('');
+    }
   };
 
   return (
@@ -204,20 +224,43 @@ function Post({ post }) {
             {post.user.firstName} {post.user.lastName}
           </span>
         </div>
-        <button className="flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline" onClick={toggleComments}>
-          Comments
+        <button className="flex items-center" onClick={toggleComments}>
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 50 50" stroke="currentColor">
+          <path d="M 25 4.0625 C 12.414063 4.0625 2.0625 12.925781 2.0625 24 C 2.0625 30.425781 5.625 36.09375 11 39.71875 C 10.992188 39.933594 11 40.265625 10.71875 41.3125 C 10.371094 42.605469 9.683594 44.4375 8.25 46.46875 L 7.21875 47.90625 L 9 47.9375 C 15.175781 47.964844 18.753906 43.90625 19.3125 43.25 C 21.136719 43.65625 23.035156 43.9375 25 43.9375 C 37.582031 43.9375 47.9375 35.074219 47.9375 24 C 47.9375 12.925781 37.582031 4.0625 25 4.0625 Z M 25 5.9375 C 36.714844 5.9375 46.0625 14.089844 46.0625 24 C 46.0625 33.910156 36.714844 42.0625 25 42.0625 C 22.996094 42.0625 21.050781 41.820313 19.21875 41.375 L 18.65625 41.25 L 18.28125 41.71875 C 18.28125 41.71875 15.390625 44.976563 10.78125 45.75 C 11.613281 44.257813 12.246094 42.871094 12.53125 41.8125 C 12.929688 40.332031 12.9375 39.3125 12.9375 39.3125 L 12.9375 38.8125 L 12.5 38.53125 C 7.273438 35.21875 3.9375 29.941406 3.9375 24 C 3.9375 14.089844 13.28125 5.9375 25 5.9375 Z"></path>
+        </svg>
         </button>
       </div>
+     
       {showComments && (
         <div className="mt-4">
           <h3 className="text-xl font-semibold mb-2">Comments</h3>
-          {/* Example comment section */}
-          <div className="border-t border-gray-200 pt-4">
-            <div className="flex items-center space-x-4">
-              <img className="w-7 h-7 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png" alt="Jese Leos avatar" />
-              <span className="font-medium dark:text-white">John Doe</span>
-            </div>
-            <p className="mt-2 text-gray-600">This is a comment.</p>
+          <ul>
+            {comments.map((comment, index) => (
+              <li key={index} className="mb-2">
+                <div className="flex items-center space-x-4">
+                  <img className="w-7 h-7 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png" alt="Jese Leos avatar" />
+                  <div>
+                    <span className="font-medium dark:text-white">{comment.author}</span>
+                    <p className="text-gray-600">{comment.text}</p>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-4">
+            <textarea
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary-400"
+              placeholder="Write a comment..."
+              rows="3"
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+            ></textarea>
+            <button
+              className="mt-2 px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 focus:outline-none focus:bg-primary-600"
+              onClick={addComment}
+            >
+              Post Comment
+            </button>
           </div>
         </div>
       )}
