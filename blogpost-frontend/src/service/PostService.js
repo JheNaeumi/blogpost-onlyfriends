@@ -13,7 +13,7 @@ export const getPostResponse = (token, page) => {
          headers: {'Authorization': `Bearer ${token}`}})
  }
  
- export const postContent = (token, userId, categoryId) => {
-     return axios.post(REST_API_BASE_URL+`/user/${userId}/category/${categoryId}`,{
+ export const postUserContent = (token, userId, content) => {
+     return axios.post(REST_API_BASE_URL+`/user/${userId}/category/1`, content,{
          headers: {'Authorization': `Bearer ${token}`}})
  }
