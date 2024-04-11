@@ -3,8 +3,9 @@ import { useEffect, useState } from "react"
 import { getAuthToken,setAuthHeader } from "../service/AuthService"
 import { useNavigate } from "react-router-dom";
 import jprofile from "../assets/jprofile.png"
-import { getPostResponse, postContent } from "../service/PostService";
+import { getPostResponse, postUserContent } from "../service/PostService";
 import { postComment } from "../service/CommentService";
+import { getProfile } from "../service/UserDataService";
 const BlogpostComponent = () => {
  
   const navigate = useNavigate();
@@ -15,9 +16,10 @@ const BlogpostComponent = () => {
   const [mappedContent, mapContent] = useState([])
   const [currentPage, setCurrentPage] = useState(0);
   const [alltotalPages, setTotalPages] = useState(0);
-  const [content, setContent] = useState([
-
-  ]) 
+  const [content, setContent] = useState({
+    postTitle: '',
+    postContent: '',
+  },[]) 
   useEffect(() => { 
           //gePostData
           fetchData(currentPage);
@@ -67,11 +69,20 @@ const BlogpostComponent = () => {
           navigate('/login')
         }
       };
-      const postUserContent = async() => {
+      const handlePostUserContent = async(e) => {
+        e.preventDefault();
         try{
+          const token = getAuthToken()
+          const getprofileId = await getProfile(token);
+          const response = await postUserContent(token,getprofileId.data.id,content)
+          if(response.status === 201){
+            console.log('Post succesful')
+            setContent('')
+          }
 
         }catch(error){
-
+          console.log('Post failed')
+          setContent('')
         }
       }
       //if token is not present
@@ -144,8 +155,8 @@ const BlogpostComponent = () => {
               </div> */}
               <div class="heading text-center font-bold text-2xl m-5 text-gray-800">New Post</div>
               <div class="editor mx-auto w-10/12 flex flex-col text-gray-800 border border-gray-300 p-4 shadow-lg max-w-2xl rounded-lg">
-                <input class="title bg-gray-100 border border-gray-300 p-2 mb-4 outline-none" spellcheck="false" placeholder="Title" type="text"/>
-                <textarea class="description bg-gray-100 sec p-3 h-40 border border-gray-300 outline-none" spellcheck="false" placeholder="Describe everything about this post here"></textarea>
+                <input class="title bg-gray-100 border border-gray-300 p-2 mb-4 outline-none" spellcheck="false" placeholder="Title" type="text" id="postTitle" name="postTitle" required value={content.postTitle || ''} onChange={(e) => setContent({...content, postTitle:e.target.value})}/>
+                <textarea class="description bg-gray-100 sec p-3 h-40 border border-gray-300 outline-none" spellcheck="false" placeholder="Describe everything about this post here"name="postContent" id="postContent" required value={content.postContent || ''} onChange={(e)=> setContent({...content, postContent:e.target.value})}></textarea>
                 
               
                 <div class="icons flex text-gray-500 m-2">
@@ -156,7 +167,7 @@ const BlogpostComponent = () => {
                 </div>
               
                 <div class="buttons flex">
-                  <button class="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500">Post</button>
+                  <button class="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500" onClick={handlePostUserContent}>Post</button>
                 </div>
               </div>
               <div className="flex justify-center">
