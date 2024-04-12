@@ -10,6 +10,7 @@ import com.example.jhenaeumi.repository.CategoryRepo;
 import com.example.jhenaeumi.repository.PostRepo;
 import com.example.jhenaeumi.repository.UserRepo;
 import com.example.jhenaeumi.service.PostService;
+import lombok.AllArgsConstructor;
 import org.mapstruct.control.MappingControl;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +25,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Service
 public class PostServiceImpl implements PostService {
 
     @Autowired
     private PostRepo postRepo;
-
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
@@ -38,10 +39,14 @@ public class PostServiceImpl implements PostService {
     private CategoryRepo categoryRepo;
 
     private Page<Post> pageOfPost;
+
+    @Autowired
+    private UserServiceImpl userService;
     @Override
-    public PostDto createPost(PostDto postDto, Long userId, Long categoryId) {
-        User user = userRepo.findById(userId).orElseThrow(null);
-       Category category = categoryRepo.findById(categoryId).orElseThrow(null);
+    public PostDto createPost(String token, PostDto postDto, Long categoryId) {
+        String logintoken = userService.validateToken(token);
+        User user = userRepo.findByLogin(logintoken).orElseThrow(()-> new AppException("Unknown User", HttpStatus.NOT_FOUND));
+        Category category = categoryRepo.findById(categoryId).orElseThrow(null);
 
         Post post = this.modelMapper.map(postDto, Post.class);
 
@@ -56,7 +61,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostResponseDto getAllPost(Integer pageNumber, Integer pageSize, String sortBy) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy).ascending());
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy).descending());
 
         pageOfPost = this.postRepo.findAll(pageable);
 
@@ -77,22 +82,41 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostDto> getAllPostByUser(String name) {
-        User user = userRepo.findByfirstName(name).orElseThrow(()-> new AppException("Unknown Post", HttpStatus.NOT_FOUND));
+        User user = userRepo.findByfirstName(name).orElseThrow(()-> new AppException("Unknown User", HttpStatus.NOT_FOUND));
         List<Post> listofPostByUser = postRepo.findByUser(user);
         List<PostDto> postDto = listofPostByUser.stream().map((post)-> modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
         return postDto;
     }
 
     @Override
-    public void deletePost(Long userId,Long postId) {
+    public PostDto updatePost(String token, PostDto postDto, Long postId) {
+        String logintoken = userService.validateToken(token);
         Post post = postRepo.findById(postId).orElseThrow(() -> new AppException("Unknown Post", HttpStatus.NOT_FOUND));
         User user = post.getUser();
-        if(user.getId().equals(userId))
+        if(user.getLogin().equals(logintoken)){
+            post = modelMapper.map(postDto, Post.class);
+            post.setPostCreatedDate(new Date());
+
+            Post savedpost = postRepo.save(post);
+            return modelMapper.map(savedpost, PostDto.class);
+        }else {
+
+            throw new AppException("Unauthorize Own User Post", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    //TODO: UpdatePostService (must be user own post) same with Delete
+    @Override
+    public void deletePost(String token,Long postId) {
+        String logintoken = userService.validateToken(token);
+        Post post = postRepo.findById(postId).orElseThrow(() -> new AppException("Unknown Post", HttpStatus.NOT_FOUND));
+        User user = post.getUser();
+        if(user.getLogin().equals(logintoken))
         {
             postRepo.delete(post);
-        }
-        else{
+        }else {
             throw new AppException("Unauthorize Deletion", HttpStatus.UNAUTHORIZED);
+
         }
     }
 
