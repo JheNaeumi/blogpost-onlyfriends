@@ -4,7 +4,8 @@ import com.example.jhenaeumi.dto.CommentDto;
 
 public interface CommentService {
 
-    CommentDto createComment(CommentDto commentDto, Long postId);
+    CommentDto createComment(String token, CommentDto commentDto, Long postId);
 
-    void deleteComment(Long postId, Long userId, Long commentId);
+    CommentDto updateComment(String token, CommentDto commentDto, Long postId);
+    void deleteComment(String token, Long commentId);
 }
