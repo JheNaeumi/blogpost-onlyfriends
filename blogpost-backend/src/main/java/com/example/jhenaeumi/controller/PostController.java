@@ -20,9 +20,9 @@ public class PostController {
     @Autowired
     PostService postService;
 
-    @PostMapping("/user/{userId}/category/{categoryId}")
-    public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto, @PathVariable Long userId, @PathVariable Long categoryId){
-        PostDto createdPost = this.postService.createPost(postDto, userId, categoryId);
+    @PostMapping("/user/category/{categoryId}")
+    public ResponseEntity<PostDto> createPost(@RequestHeader("Authorization") String token, @Valid @RequestBody PostDto postDto, @PathVariable Long categoryId){
+        PostDto createdPost = this.postService.createPost(token, postDto,categoryId);
 
         return new ResponseEntity<PostDto>(createdPost, HttpStatus.CREATED);
     }
@@ -39,9 +39,15 @@ public class PostController {
         List<PostDto> postDto = postService.getAllPostByUser(name);
         return new ResponseEntity<List<PostDto>>(postDto, HttpStatus.OK);
     }
-    @DeleteMapping("{postId}/user/{userId}/")
-    public ResponseEntity<String> deletePost(@PathVariable("userId") Long userId, @PathVariable("postId") Long postId){
-        postService.deletePost(userId, postId);
+
+    @PatchMapping("/user/update/{postId}")
+    public ResponseEntity<PostDto> updatePost(@RequestHeader("Authorization") String token, @Valid @RequestBody PostDto postDto, @PathVariable("postId") Long postId){
+        PostDto updatedPost = postService.updatePost(token, postDto, postId);
+        return new ResponseEntity<PostDto>(updatedPost, HttpStatus.CREATED);
+    }
+    @DeleteMapping("/user/delete/{postId}")
+    public ResponseEntity<String> deletePost(@RequestHeader("Authorization") String token, @PathVariable("postId") Long postId){
+        postService.deletePost(token, postId);
 
         return new ResponseEntity<>("Post Deleted",HttpStatus.OK);
     }
