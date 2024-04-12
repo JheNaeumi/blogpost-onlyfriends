@@ -3,6 +3,7 @@ package com.example.jhenaeumi.controller;
 import com.example.jhenaeumi.dto.CommentDto;
 import com.example.jhenaeumi.service.CommentService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,17 +12,24 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/comment")
 public class CommentController {
 
+    @Autowired
     private CommentService commentService;
 
-    @PostMapping("/create")
-    public ResponseEntity<CommentDto> createComment(@RequestBody @Valid CommentDto commentDto, Long postId){
-        CommentDto createdComment = commentService.createComment(commentDto, postId);
+    @PostMapping("/create/{postId}")
+    public ResponseEntity<CommentDto> createComment(@RequestHeader("Authorization") String token,@RequestBody @Valid CommentDto commentDto, @PathVariable("postId") Long postId){
+        CommentDto createdComment = commentService.createComment(token, commentDto, postId);
         return new ResponseEntity<CommentDto>(createdComment, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/delete/{userId}/{postId}/{commentId}")
-    public ResponseEntity<String> deleteComment(@PathVariable("userId") Long userId, @PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId){
-        commentService.deleteComment(postId, userId, commentId);
+    @PatchMapping("/update/{commentId}")
+    public ResponseEntity<CommentDto> updateComment(@RequestHeader("Authorization") String token,@RequestBody @Valid CommentDto commentDto,@PathVariable("commentId")  Long commentId){
+        CommentDto updateComment = commentService.updateComment(token, commentDto, commentId);
+        return new ResponseEntity<CommentDto>(updateComment, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/delete/{commentId}")
+    public ResponseEntity<String> deleteComment(@RequestHeader("Authorization") String token, @PathVariable("commentId") Long commentId){
+        commentService.deleteComment(token, commentId);
         return new ResponseEntity<>("Comment Deleted",HttpStatus.OK);
     }
 }
