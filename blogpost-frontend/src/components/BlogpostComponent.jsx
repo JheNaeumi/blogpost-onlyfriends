@@ -73,8 +73,7 @@ const BlogpostComponent = () => {
         e.preventDefault();
         try{
           const token = getAuthToken()
-          const getprofileId = await getProfile(token);
-          const response = await postUserContent(token,getprofileId.data.id,content)
+          const response = await postUserContent(token,content)
           if(response.status === 201){
             console.log('Post succesful')
             setContent('')
@@ -197,21 +196,28 @@ const BlogpostComponent = () => {
 
 function Post({ post }) {
   const [showComments, setShowComments] = useState(false);
-  const [commentText, setCommentText] = useState('');
-  const [comments, setComments] = useState([]);
+  const [userComment, setCommentText] = useState({
+    commentContent:'',
+  });
+  const [mappedComments, setmappedComments] = useState([]);
 
+  useEffect(()=> {
+    setmappedComments(post.comments)
+  })
   const toggleComments = () => {
     setShowComments(!showComments);
   };
 
-  const addComment = () => {
-    if (commentText.trim() !== '') {
-      const newComment = {
-        author: 'John Doe', // You can replace this with the actual author
-        text: commentText,
-      };
-      setComments([...comments, newComment]);
-      setCommentText('');
+  const addComment = async(e) => {
+    e.preventDefault()
+    try {
+      const token = getAuthToken()
+      const response = await postComment(token, userComment, post.id)
+      
+      
+      
+    } catch (error) {
+      console.log(error)
     }
   };
 
@@ -222,7 +228,7 @@ function Post({ post }) {
           <svg className="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
             <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path>
           </svg>
-          {post.category.categoryTitle}
+          {post.category.categoryTitle} 
         </span>
         <span className="text-sm">{new Date(post.postCreatedDate).toLocaleString()}</span>
       </div>
@@ -232,7 +238,7 @@ function Post({ post }) {
         <div className="flex items-center space-x-4">
           <img className="w-7 h-7 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png" alt="Jese Leos avatar" />
           <span className="font-medium dark:text-white">
-            {post.user.firstName} {post.user.lastName}
+          {post.user.firstName} {post.user.lastName}
           </span>
         </div>
         <button className="flex items-center" onClick={toggleComments}>
@@ -241,18 +247,17 @@ function Post({ post }) {
         </svg>
         </button>
       </div>
-     
       {showComments && (
         <div className="mt-4">
           <h3 className="text-xl font-semibold mb-2">Comments</h3>
           <ul>
-            {comments.map((comment, index) => (
-              <li key={index} className="mb-2">
+            {mappedComments.map((comment) => (
+              <li key={comment.id} className="mb-2">
                 <div className="flex items-center space-x-4">
                   <img className="w-7 h-7 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png" alt="Jese Leos avatar" />
                   <div>
-                    <span className="font-medium dark:text-white">{comment.author}</span>
-                    <p className="text-gray-600">{comment.text}</p>
+                    <span className="font-medium dark:text-white">{comment.user.firstName} {comment.user.lastName}</span>
+                    <p className="text-gray-600">{comment.commentContent}</p>
                   </div>
                 </div>
               </li>
@@ -263,15 +268,13 @@ function Post({ post }) {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary-400"
               placeholder="Write a comment..."
               rows="3"
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
+              name="commentContent"
+              id="commentContent"
+              required
+              value={ userComment.commentContent || ''}
+              onChange={(e) => setCommentText({...userComment, commentContent:e.target.value})}
             ></textarea>
-            <button
-              className="mt-2 px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 focus:outline-none focus:bg-primary-600"
-              onClick={addComment}
-            >
-              Post Comment
-            </button>
+          <button class="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500" onClick={addComment}>Comment</button>
           </div>
         </div>
       )}
