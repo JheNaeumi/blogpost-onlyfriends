@@ -96,7 +96,8 @@ public class PostServiceImpl implements PostService {
         if(user.getLogin().equals(logintoken)){
             post = modelMapper.map(postDto, Post.class);
             post.setPostCreatedDate(new Date());
-
+            post.setUser(post.getUser());
+            post.setCategory(post.getCategory());
             Post savedpost = postRepo.save(post);
             return modelMapper.map(savedpost, PostDto.class);
         }else {
