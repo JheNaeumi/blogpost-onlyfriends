@@ -1,19 +1,17 @@
 package com.example.jhenaeumi.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
+@Data
 public class CommentDto {
     private Long id;
 
-    private String content;
+    private String commentContent;
 
-    private PostDto postDto;
-
-    private PostUserDto postUserDto;
+    private PostUserDto user;
 
 }
