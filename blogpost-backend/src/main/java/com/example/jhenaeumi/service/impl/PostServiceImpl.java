@@ -94,10 +94,9 @@ public class PostServiceImpl implements PostService {
         Post post = postRepo.findById(postId).orElseThrow(() -> new AppException("Unknown Post", HttpStatus.NOT_FOUND));
         User user = post.getUser();
         if(user.getLogin().equals(logintoken)){
-            post = modelMapper.map(postDto, Post.class);
+            post.setPostTitle(postDto.getPostTitle());
+            post.setPostContent(postDto.getPostContent());
             post.setPostCreatedDate(new Date());
-            post.setUser(post.getUser());
-            post.setCategory(post.getCategory());
             Post savedpost = postRepo.save(post);
             return modelMapper.map(savedpost, PostDto.class);
         }else {
