@@ -47,7 +47,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepo.findById(commentId).orElseThrow(() -> new AppException("Unknown comment", HttpStatus.NOT_FOUND));
         User user = comment.getUser();
         if(user.getLogin().equals(logintoken)) {
-            comment = modelMapper.map(commentDto, Comment.class);
+            comment.setCommentContent(commentDto.getCommentContent());
             comment.setUser(comment.getUser());
             comment.setPost(comment.getPost());
             Comment savedComment = commentRepo.save(comment);
