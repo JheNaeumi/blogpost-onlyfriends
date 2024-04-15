@@ -22,7 +22,7 @@ const BlogpostComponent = () => {
   },[]) 
   useEffect(() => { 
           //gePostData
-          fetchData(currentPage);
+          getPostContent();
 
           // Initial call to set initial state
           handleResize();
@@ -52,6 +52,9 @@ const BlogpostComponent = () => {
         setCurrentPage(page)
         fetchData(page)
       };
+      const getPostContent= async() => {
+        fetchData(currentPage);
+      }
       //getPostData
       const fetchData = async (page) => {
         //TODO: Make it as a Service
@@ -77,6 +80,7 @@ const BlogpostComponent = () => {
           if(response.status === 201){
             console.log('Post succesful')
             setContent('')
+            getPostContent()
           }
 
         }catch(error){
@@ -200,10 +204,10 @@ function Post({ post }) {
     commentContent:'',
   });
   const [mappedComments, setmappedComments] = useState([]);
-
   useEffect(()=> {
     setmappedComments(post.comments)
   })
+ 
   const toggleComments = () => {
     setShowComments(!showComments);
   };
@@ -213,11 +217,10 @@ function Post({ post }) {
     try {
       const token = getAuthToken()
       const response = await postComment(token, userComment, post.id)
-      
-      
-      
+      setCommentText('')
     } catch (error) {
       console.log(error)
+      setCommentText('')
     }
   };
 
