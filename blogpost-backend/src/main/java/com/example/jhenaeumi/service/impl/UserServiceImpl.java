@@ -97,9 +97,9 @@ public class UserServiceImpl implements UserService {
 
         User user = userRepository.findByLogin(signUpDto.getLogin())
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
-
         user.setFirstName(signUpDto.getFirstName());
         user.setLastName(signUpDto.getLastName());
+        user.setRole(Role.USER);
         user.setPassword(passwordEncoder.encode(CharBuffer.wrap(signUpDto.getPassword())));
         User savedUser = userRepository.save(user);
         return userMapper.toUserDto(savedUser);
