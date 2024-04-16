@@ -2,7 +2,6 @@ import { useEffect, useState } from "react"
 
 import { getAuthToken,setAuthHeader } from "../service/AuthService"
 import { useNavigate } from "react-router-dom";
-import jprofile from "../assets/jprofile.png"
 import { getPostResponse, postUserContent } from "../service/PostService";
 import { postComment } from "../service/CommentService";
 import { getProfile } from "../service/UserDataService";
@@ -16,11 +15,13 @@ const BlogpostComponent = () => {
   const [mappedContent, mapContent] = useState([])
   const [currentPage, setCurrentPage] = useState(0);
   const [alltotalPages, setTotalPages] = useState(0);
+  const [formData, setFormData] = useState([])
   const [content, setContent] = useState({
     postTitle: '',
     postContent: '',
   },[]) 
   useEffect(() => { 
+          getUserProfileData();
           //gePostData
           getPostContent();
 
@@ -54,6 +55,17 @@ const BlogpostComponent = () => {
       };
       const getPostContent= async() => {
         fetchData(currentPage);
+      }
+      const getUserProfileData = async() =>  {
+        try {
+          const token = getAuthToken()
+          const response = await getProfile(token)
+          if(response.status === 200){
+            setFormData(response.data)
+        }
+        } catch (error) {
+          console.log(error)
+        }
       }
       //getPostData
       const fetchData = async (page) => {
@@ -104,8 +116,9 @@ const BlogpostComponent = () => {
               <span className="sr-only">Close menu</span>
             </button>
           </div>
-          <div className="flex items-center justify-center py-12 h-40 dark:border-gray-600">
-            <img src={jprofile} alt="Profile" className="w-24 h-24 rounded-full" />
+          <div className="flex flex-col items-center justify-center py-14 dark:border-gray-600">
+            <img width="96" height="96" src="https://img.icons8.com/windows/96/user.png" alt="user"/>
+            <span class="text-xl font-semibold flex justify-center">{formData.firstName} {formData.lastName}</span>
           </div>
           
           <div className="overflow-y-auto">
@@ -176,7 +189,7 @@ const BlogpostComponent = () => {
               <div className="flex justify-center">
                 <div className="grid gap-8 grid-cols-1 pt-12 px-2 w-2/3 ">
                 {mappedContent.map((post) => (
-                  <Post key={post.id} post={post} />
+                  <Post key={post.id} post={post} getPostContent={getPostContent} />
                 ))}
                 </div>
               </div>  
@@ -198,16 +211,17 @@ const BlogpostComponent = () => {
   )
 }
 
-function Post({ post }) {
+function Post({ post, getPostContent }) {
   const [showComments, setShowComments] = useState(false);
   const [userComment, setCommentText] = useState({
     commentContent:'',
   });
   const [mappedComments, setmappedComments] = useState([]);
+
   useEffect(()=> {
     setmappedComments(post.comments)
+    
   })
- 
   const toggleComments = () => {
     setShowComments(!showComments);
   };
@@ -216,8 +230,11 @@ function Post({ post }) {
     e.preventDefault()
     try {
       const token = getAuthToken()
-      const response = await postComment(token, userComment, post.id)
+      await postComment(token, userComment, post.id)
+      getPostContent()
+      setmappedComments(post.comments)
       setCommentText('')
+      
     } catch (error) {
       console.log(error)
       setCommentText('')
@@ -239,7 +256,7 @@ function Post({ post }) {
       <p className="mb-5 font-light text-gray-500 dark:text-gray-400">{post.postContent}</p>
       <div className="flex flex-wrap justify-between items-center">
         <div className="flex items-center space-x-4">
-          <img className="w-7 h-7 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png" alt="Jese Leos avatar" />
+        <img width="32" height="32" src="https://img.icons8.com/windows/32/user.png" alt="user"/>
           <span className="font-medium dark:text-white">
           {post.user.firstName} {post.user.lastName}
           </span>
@@ -257,9 +274,9 @@ function Post({ post }) {
             {mappedComments.map((comment) => (
               <li key={comment.id} className="mb-2">
                 <div className="flex items-center space-x-4">
-                  <img className="w-7 h-7 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png" alt="Jese Leos avatar" />
+                  <img width="32" height="32" src="https://img.icons8.com/windows/32/user.png" alt="user"/>
                   <div>
-                    <span className="font-medium dark:text-white">{comment.user.firstName} {comment.user.lastName}</span>
+                    <span className="font-medium dark:text-white">{comment.id}. {comment.user.firstName} {comment.user.lastName}</span>
                     <p className="text-gray-600">{comment.commentContent}</p>
                   </div>
                 </div>
