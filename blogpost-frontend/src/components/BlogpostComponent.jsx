@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useLayoutEffect } from "react"
 
 import { getAuthToken,setAuthHeader } from "../service/AuthService"
 import { useNavigate } from "react-router-dom";
@@ -217,11 +217,16 @@ function Post({ post, getPostContent }) {
     commentContent:'',
   });
   const [mappedComments, setmappedComments] = useState([]);
+  const [showOptions, setShowOptions] = useState(false);
 
-  useEffect(()=> {
+  useLayoutEffect(()=> {
+    
     setmappedComments(post.comments)
     
-  })
+  },[])
+  const toggleOptions = () => {
+    setShowOptions(!showOptions);
+  };
   const toggleComments = () => {
     setShowComments(!showComments);
   };
@@ -244,13 +249,34 @@ function Post({ post, getPostContent }) {
   return (
     <article key={post.id} className="p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
       <div className="flex justify-between items-center mb-5 text-gray-500">
-        <span className="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-primary-200 dark:text-primary-800">
+        <span className="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center  rounded dark:bg-primary-200 dark:text-primary-800">
           <svg className="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
             <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path>
           </svg>
           {post.category.categoryTitle} 
         </span>
-        <span className="text-sm">{new Date(post.postCreatedDate).toLocaleString()}</span>
+        <div className="relative inline-block text-left">
+          <a onClick={toggleOptions} className="inline-flex justify-center w-full border-gray-300 shadow-sm px-4  bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
+            {/* Three dots icon */}
+            <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fillRule="evenodd" d="M10 6a2 2 0 100-4 2 2 0 000 4zM2 6a2 2 0 100-4 2 2 0 000 4zm16 0a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+            </svg>
+          </a>
+          {/* Dropdown menu */}
+          {showOptions && (
+            <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex="-1">
+              <div className="py-1" role="none">
+                {/* Option to update post */}
+                <button  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabIndex="-1" id="menu-item-0">Update Post</button>
+                {/* Option to delete post */}
+                <button  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabIndex="-1" id="menu-item-1">Delete Post</button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="flex text-center">
+        <span className="text-gray-500 text-sm">{new Date(post.postCreatedDate).toLocaleString()}</span>
       </div>
       <h2 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"><a href="#">{post.postTitle}</a></h2>
       <p className="mb-5 font-light text-gray-500 dark:text-gray-400">{post.postContent}</p>
@@ -271,7 +297,7 @@ function Post({ post, getPostContent }) {
         <div className="mt-4">
           <h3 className="text-xl font-semibold mb-2">Comments</h3>
           <ul>
-            {mappedComments.map((comment) => (
+            {mappedComments.slice().sort((a, b) => a.id - b.id).map((comment) => (
               <li key={comment.id} className="mb-2">
                 <div className="flex items-center space-x-4">
                   <img width="32" height="32" src="https://img.icons8.com/windows/32/user.png" alt="user"/>
