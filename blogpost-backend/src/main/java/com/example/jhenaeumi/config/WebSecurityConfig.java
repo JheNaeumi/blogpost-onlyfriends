@@ -36,6 +36,7 @@ public class WebSecurityConfig {
         configuration.setAllowedMethods(Arrays.asList(
                 HttpMethod.GET.name(),
                 HttpMethod.POST.name(),
+                HttpMethod.PATCH.name(),
                 HttpMethod.PUT.name(),
                 HttpMethod.OPTIONS.name()));
         configuration.setAllowedHeaders(Arrays.asList(
