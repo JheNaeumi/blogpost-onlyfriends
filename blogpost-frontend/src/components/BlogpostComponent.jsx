@@ -2,7 +2,7 @@ import { useEffect, useState, useLayoutEffect } from "react"
 
 import { getAuthToken,setAuthHeader } from "../service/AuthService"
 import { useNavigate } from "react-router-dom";
-import { getPostResponse, postUserContent } from "../service/PostService";
+import { getPostResponse, postUserContent, updateUserContent } from "../service/PostService";
 import { postComment } from "../service/CommentService";
 import { getProfile } from "../service/UserDataService";
 const BlogpostComponent = () => {
@@ -189,7 +189,7 @@ const BlogpostComponent = () => {
               <div className="flex justify-center">
                 <div className="grid gap-8 grid-cols-1 pt-12 px-2 w-2/3 ">
                 {mappedContent.map((post) => (
-                  <Post key={post.id} post={post} getPostContent={getPostContent} />
+                  <Post key={post.id} post={post} getPostContent={getPostContent} formData={formData}/>
                 ))}
                 </div>
               </div>  
@@ -211,14 +211,16 @@ const BlogpostComponent = () => {
   )
 }
 
-function Post({ post, getPostContent }) {
+function Post({ post, getPostContent, formData }) {
   const [showComments, setShowComments] = useState(false);
   const [userComment, setCommentText] = useState({
     commentContent:'',
   });
   const [mappedComments, setmappedComments] = useState([]);
   const [showOptions, setShowOptions] = useState(false);
-
+  const [postContent, setUpdatedPostContent] = useState(post.postContent);
+  const [postTitle, setUpdatePostTitle] = useState(post.postTitle)
+  const [isEditing, setIsEditing] = useState(false);
   useLayoutEffect(()=> {
     
     setmappedComments(post.comments)
@@ -230,7 +232,27 @@ function Post({ post, getPostContent }) {
   const toggleComments = () => {
     setShowComments(!showComments);
   };
-
+  
+  const handleCancel = () =>{
+    setIsEditing(false);
+  }
+  const handleUpdatePost = async (e) => {
+    e.preventDefault()
+    try{
+    // Call the updatePost function with the updated content
+    const updatedTitleAndContent = {postTitle, postContent}
+    const token = getAuthToken()
+    const response = await updateUserContent(token, post.id, updatedTitleAndContent)
+    console.log(response.status)
+    // Close the options menu
+    setShowOptions(false);
+    // Reset editing state
+    setIsEditing(false);
+    getPostContent();
+    }catch(error){
+      console.log(error)
+    }
+  };
   const addComment = async(e) => {
     e.preventDefault()
     try {
@@ -248,38 +270,63 @@ function Post({ post, getPostContent }) {
 
   return (
     <article key={post.id} className="p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
-      <div className="flex justify-between items-center mb-5 text-gray-500">
-        <span className="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center  rounded dark:bg-primary-200 dark:text-primary-800">
-          <svg className="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+      <div className="flex justify-between items-center mb-2.5 text-gray-500">
+        <span className="bg-primary-100 text-primary-800 text-sm font-medium inline-flex items-center  rounded dark:bg-primary-200 dark:text-primary-800">
+          <svg className="mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
             <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path>
           </svg>
           {post.category.categoryTitle} 
         </span>
-        <div className="relative inline-block text-left">
-          <a onClick={toggleOptions} className="inline-flex justify-center w-full border-gray-300 shadow-sm px-4  bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
+        {post.user.login === formData.login && (
+        <div className="relative text-xs inline-block">
+          <div className="flex justify-between items-center text-gray-500">
+          <a onClick={toggleOptions} className=" inline-flex w-full bg-white text-gray-700 focus:outline-none focus:ring-10 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
             {/* Three dots icon */}
-            <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <svg className=" mt-3 mr-2 h-5 w-5 " xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fillRule="evenodd" d="M10 6a2 2 0 100-4 2 2 0 000 4zM2 6a2 2 0 100-4 2 2 0 000 4zm16 0a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
             </svg>
           </a>
+          </div>
           {/* Dropdown menu */}
           {showOptions && (
-            <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex="-1">
+            <div className="origin-top-right absolute right-0  rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex="-1">
               <div className="py-1" role="none">
                 {/* Option to update post */}
-                <button  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabIndex="-1" id="menu-item-0">Update Post</button>
+                <button onClick={() => {setIsEditing(true), setShowOptions(false)}}className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabIndex="-1" id="menu-item-0">Update </button>
                 {/* Option to delete post */}
-                <button  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabIndex="-1" id="menu-item-1">Delete Post</button>
+                <button  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabIndex="-1" id="menu-item-1">Delete </button>
               </div>
             </div>
           )}
         </div>
+        )}
       </div>
+
       <div className="flex text-center">
         <span className="text-gray-500 text-sm">{new Date(post.postCreatedDate).toLocaleString()}</span>
       </div>
-      <h2 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"><a href="#">{post.postTitle}</a></h2>
-      <p className="mb-5 font-light text-gray-500 dark:text-gray-400">{post.postContent}</p>
+      {isEditing ? (
+        // Textarea for editing post content
+        <div>
+          <input className="w-full text-2xl text-gray-900 dark:text-white py-2 my-3 font-bold border border-gray-300 rounded-md focus:outline-none focus:border-primary-400" value={postTitle} onChange={(e) => setUpdatePostTitle(e.target.value)}></input>
+          <textarea
+            className="mb-5 w-full px-3 py-2 font-light text-gray-500 dark:text-gray-400 border border-gray-300 rounded-md focus:outline-none focus:border-primary-400"
+            rows="6"
+            value={postContent}
+            onChange={(e) => setUpdatedPostContent(e.target.value)}
+          ></textarea>
+          <div className="flex justify-end mb-4">
+            <button class="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500" onClick={handleUpdatePost} >Update</button>
+            <button class="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500" onClick={handleCancel} >Cancel</button>
+          </div>
+        </div>
+      ) : (
+        // Non-editable post content
+        <div>
+          <h2 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{post.postTitle}</h2>
+          <p className="mb-5 font-light text-gray-500 dark:text-gray-400">{post.postContent}</p>
+        </div>
+      )}
       <div className="flex flex-wrap justify-between items-center">
         <div className="flex items-center space-x-4">
         <img width="32" height="32" src="https://img.icons8.com/windows/32/user.png" alt="user"/>
@@ -302,7 +349,7 @@ function Post({ post, getPostContent }) {
                 <div className="flex items-center space-x-4">
                   <img width="32" height="32" src="https://img.icons8.com/windows/32/user.png" alt="user"/>
                   <div>
-                    <span className="font-medium dark:text-white">{comment.id}. {comment.user.firstName} {comment.user.lastName}</span>
+                    <span className="font-medium dark:text-white">{comment.user.firstName} {comment.user.lastName}</span>
                     <p className="text-gray-600">{comment.commentContent}</p>
                   </div>
                 </div>
