@@ -19,7 +19,7 @@ export const getPostResponse = (token, page) => {
  }
 
  export const deleteUserContent =(token, postId) => {
-    axios.delete(REST_API_BASE_URL + `/user/delete/${postId}`, {
+   return axios.delete(REST_API_BASE_URL + `/user/delete/${postId}`, {
         headers: {'Authorization' : `Bearer ${token}`}
     })
  }
