@@ -2,7 +2,7 @@ import { useEffect, useState, useLayoutEffect } from "react"
 
 import { getAuthToken,setAuthHeader } from "../service/AuthService"
 import { useNavigate } from "react-router-dom";
-import { getPostResponse, postUserContent, updateUserContent } from "../service/PostService";
+import { deleteUserContent, getPostResponse, postUserContent, updateUserContent } from "../service/PostService";
 import { postComment } from "../service/CommentService";
 import { getProfile } from "../service/UserDataService";
 const BlogpostComponent = () => {
@@ -75,6 +75,7 @@ const BlogpostComponent = () => {
           const response = await getPostResponse(token, page)
           setisAuth(true)
           mapContent(response.data.content)
+          console.log(response.data.content)
           setTotalPages(response.data.totalPages-1)
           //console.log(response.data.content )
           //console.log("success")
@@ -118,7 +119,7 @@ const BlogpostComponent = () => {
           </div>
           <div className="flex flex-col items-center justify-center py-14 dark:border-gray-600">
             <img width="96" height="96" src="https://img.icons8.com/windows/96/user.png" alt="user"/>
-            <span class="text-xl font-semibold flex justify-center">{formData.firstName} {formData.lastName}</span>
+            <span className="text-xl font-semibold flex justify-center">{formData.firstName} {formData.lastName}</span>
           </div>
           
           <div className="overflow-y-auto">
@@ -169,21 +170,18 @@ const BlogpostComponent = () => {
                   <h2 className="mb-4 text-3xl lg:text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Our Blog</h2>
                   <p className="font-light text-gray-500 sm:text-xl dark:text-gray-400">We use an agile approach to test assumptions and connect with the needs of your audience early and often.</p>
               </div> */}
-              <div class="heading text-center font-bold text-2xl m-5 text-gray-800">New Post</div>
-              <div class="editor mx-auto w-10/12 flex flex-col text-gray-800 border border-gray-300 p-4 shadow-lg max-w-2xl rounded-lg">
-                <input class="title bg-gray-100 border border-gray-300 p-2 mb-4 outline-none" spellcheck="false" placeholder="Title" type="text" id="postTitle" name="postTitle" required value={content.postTitle || ''} onChange={(e) => setContent({...content, postTitle:e.target.value})}/>
-                <textarea class="description bg-gray-100 sec p-3 h-40 border border-gray-300 outline-none" spellcheck="false" placeholder="Describe everything about this post here"name="postContent" id="postContent" required value={content.postContent || ''} onChange={(e)=> setContent({...content, postContent:e.target.value})}></textarea>
+              <div className="heading text-center font-bold text-2xl m-5 text-gray-800">New Post</div>
+              <div className="editor mx-auto w-10/12 flex flex-col text-gray-800 border border-gray-300 p-4 shadow-lg max-w-2xl rounded-lg">
+                <input className="title bg-gray-100 border border-gray-300 p-2 mb-4 outline-none" spellCheck="false" placeholder="Title" type="text" id="postTitle" name="postTitle" required value={content.postTitle || ''} onChange={(e) => setContent({...content, postTitle:e.target.value})}/>
+                <textarea className="description bg-gray-100 sec p-3 h-40 border border-gray-300 outline-none" spellCheck="false" placeholder="Describe everything about this post here"name="postContent" id="postContent" required value={content.postContent || ''} onChange={(e)=> setContent({...content, postContent:e.target.value})}></textarea>
                 
               
-                <div class="icons flex text-gray-500 m-2">
-                  <svg class="mr-2 cursor-pointer hover:text-gray-700 border rounded-full p-1 h-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                  <svg class="mr-2 cursor-pointer hover:text-gray-700 border rounded-full p-1 h-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  <svg class="mr-2 cursor-pointer hover:text-gray-700 border rounded-full p-1 h-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
-                  <div class="count ml-auto text-gray-400 text-xs font-semibold">0/300</div>
+                <div className="icons flex text-gray-500 m-2">
+                  <div className="count ml-auto text-gray-400 text-xs font-semibold">0/300</div>
                 </div>
               
-                <div class="buttons flex">
-                  <button class="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500" onClick={handlePostUserContent}>Post</button>
+                <div className="buttons flex">
+                  <button className="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500" onClick={handlePostUserContent}>Post</button>
                 </div>
               </div>
               <div className="flex justify-center">
@@ -216,16 +214,19 @@ function Post({ post, getPostContent, formData }) {
   const [userComment, setCommentText] = useState({
     commentContent:'',
   });
-  const [mappedComments, setmappedComments] = useState([]);
+  const [mappedComments, setmappedComments] = useState(post.comments);
   const [showOptions, setShowOptions] = useState(false);
   const [postContent, setUpdatedPostContent] = useState(post.postContent);
   const [postTitle, setUpdatePostTitle] = useState(post.postTitle)
   const [isEditing, setIsEditing] = useState(false);
-  useLayoutEffect(()=> {
-    
-    setmappedComments(post.comments)
-    
-  },[])
+  const [commentOptionsVisibility, setCommentOptionsVisibility] = useState({});
+
+  const toggleCommentOption = (commentId) => {
+    setCommentOptionsVisibility(prevState => ({
+      ...prevState,
+      [commentId]: !prevState[commentId]
+    }));
+  };
   const toggleOptions = () => {
     setShowOptions(!showOptions);
   };
@@ -253,19 +254,39 @@ function Post({ post, getPostContent, formData }) {
       console.log(error)
     }
   };
+  const handleDeletePost = async(e) => {
+    e.preventDefault();
+    try {
+      const token = getAuthToken();
+      await deleteUserContent(token, post.id)
+     
+      setShowOptions(false);
+       getPostContent();
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  const handleUpdateComment = async (commentId) => {
+    // Implement update comment logic here
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    // Implement delete comment logic here
+  };
   const addComment = async(e) => {
     e.preventDefault()
     try {
       const token = getAuthToken()
-      await postComment(token, userComment, post.id)
-      getPostContent()
-      setmappedComments(post.comments)
-      setCommentText('')
+      const response = await postComment(token, userComment, post.id)
+      console.log("Comment Succes", response.status)
+      setCommentText('');
       
+      setmappedComments([...mappedComments, response.data]);
     } catch (error) {
       console.log(error)
       setCommentText('')
     }
+
   };
 
   return (
@@ -280,12 +301,12 @@ function Post({ post, getPostContent, formData }) {
         {post.user.login === formData.login && (
         <div className="relative text-xs inline-block">
           <div className="flex justify-between items-center text-gray-500">
-          <a onClick={toggleOptions} className=" inline-flex w-full bg-white text-gray-700 focus:outline-none focus:ring-10 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
+          <button onClick={toggleOptions} className=" inline-flex w-full bg-white text-gray-700 focus:outline-none focus:ring-10 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
             {/* Three dots icon */}
             <svg className=" mt-3 mr-2 h-5 w-5 " xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fillRule="evenodd" d="M10 6a2 2 0 100-4 2 2 0 000 4zM2 6a2 2 0 100-4 2 2 0 000 4zm16 0a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
             </svg>
-          </a>
+          </button>
           </div>
           {/* Dropdown menu */}
           {showOptions && (
@@ -294,7 +315,7 @@ function Post({ post, getPostContent, formData }) {
                 {/* Option to update post */}
                 <button onClick={() => {setIsEditing(true), setShowOptions(false)}}className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabIndex="-1" id="menu-item-0">Update </button>
                 {/* Option to delete post */}
-                <button  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabIndex="-1" id="menu-item-1">Delete </button>
+                <button onClick={handleDeletePost} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabIndex="-1" id="menu-item-1">Delete </button>
               </div>
             </div>
           )}
@@ -308,7 +329,7 @@ function Post({ post, getPostContent, formData }) {
       {isEditing ? (
         // Textarea for editing post content
         <div>
-          <input className="w-full text-2xl text-gray-900 dark:text-white py-2 my-3 font-bold border border-gray-300 rounded-md focus:outline-none focus:border-primary-400" value={postTitle} onChange={(e) => setUpdatePostTitle(e.target.value)}></input>
+          <input className="w-full text-2xl text-gray-900 dark:text-white px-3 py-2 my-3 font-bold border border-gray-300 rounded-md focus:outline-none focus:border-primary-400" value={postTitle} onChange={(e) => setUpdatePostTitle(e.target.value)}></input>
           <textarea
             className="mb-5 w-full px-3 py-2 font-light text-gray-500 dark:text-gray-400 border border-gray-300 rounded-md focus:outline-none focus:border-primary-400"
             rows="6"
@@ -316,8 +337,8 @@ function Post({ post, getPostContent, formData }) {
             onChange={(e) => setUpdatedPostContent(e.target.value)}
           ></textarea>
           <div className="flex justify-end mb-4">
-            <button class="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500" onClick={handleUpdatePost} >Update</button>
-            <button class="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500" onClick={handleCancel} >Cancel</button>
+            <button className="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500" onClick={handleUpdatePost} >Update</button>
+            <button className="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500" onClick={handleCancel} >Cancel</button>
           </div>
         </div>
       ) : (
@@ -341,38 +362,61 @@ function Post({ post, getPostContent, formData }) {
         </button>
       </div>
       {showComments && (
-        <div className="mt-4">
+        <div className="mt-5">
           <h3 className="text-xl font-semibold mb-2">Comments</h3>
           <ul>
-            {mappedComments.slice().sort((a, b) => a.id - b.id).map((comment) => (
-              <li key={comment.id} className="mb-2">
-                <div className="flex items-center space-x-4">
-                  <img width="32" height="32" src="https://img.icons8.com/windows/32/user.png" alt="user"/>
-                  <div>
-                    <span className="font-medium dark:text-white">{comment.user.firstName} {comment.user.lastName}</span>
-                    <p className="text-gray-600">{comment.commentContent}</p>
+          {mappedComments.slice().sort((a, b) => a.id - b.id).map((comment) => (
+            <li key={comment.id} className="flex justify-between items-center mb-4 text-gray-500">
+              <div className="flex flex-col mt-2">
+              <span className="bg-primary-100 text-primary-800 text-sm font-medium inline-flex items-center  rounded dark:bg-primary-200 dark:text-primary-800">
+                <img width="32" height="32" src="https://img.icons8.com/windows/32/user.png" alt="user"/>
+                {comment.user.firstName} {comment.user.lastName}
+              </span>
+              <span className="text-gray-500 text-sm">{comment.commentContent}</span>
+              </div>
+              {formData.login === comment.user.login && (
+                <div className="relative text-xs inline-block">
+                  <div className=" flex justify-between text-gray-500">
+                    <button onClick={() => toggleCommentOption(comment.id)} className=" bg-white text-gray-700 focus:outline-none focus:ring-10 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
+                      {/* Three dots icon */}
+                      <svg className="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fillRule="evenodd" d="M10 6a2 2 0 100-4 2 2 0 000 4zM2 6a2 2 0 100-4 2 2 0 000 4zm16 0a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                      </svg>
+                    </button>
                   </div>
+                  {/* Dropdown menu */}
+                  {commentOptionsVisibility[comment.id] && (
+                    <div className="origin-top-right absolute top-3 right-0 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex="-1">
+                      <div className=" flex py-1" role="none">
+                        {/* Option to update post */}
+                        <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabIndex="-1" id="menu-item-0">Update </button>
+                        {/* Option to delete post */}
+                        <button onClick={() => handleDeleteComment(comment.id)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabIndex="-1" id="menu-item-1">Delete </button>
+                      </div>
+                    </div>
+                  )}
+                 
                 </div>
-              </li>
-            ))}
+                
+                
+              
+              )}
+             
+              
+              
+            </li>
+          ))}
+
           </ul>
           <div className="mt-4">
-            <textarea
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary-400"
-              placeholder="Write a comment..."
-              rows="3"
-              name="commentContent"
-              id="commentContent"
-              required
-              value={ userComment.commentContent || ''}
-              onChange={(e) => setCommentText({...userComment, commentContent:e.target.value})}
-            ></textarea>
-          <button class="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500" onClick={addComment}>Comment</button>
+            <textarea className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary-400" placeholder="Write a comment..." rows="3" name="commentContent" id="commentContent" required value={ userComment.commentContent || ''} onChange={(e) => setCommentText({...userComment, commentContent:e.target.value})} ></textarea>
+            <button className="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500" onClick={addComment}>Comment</button>
           </div>
         </div>
       )}
     </article>
   );
 }
+
 
 export default BlogpostComponent
