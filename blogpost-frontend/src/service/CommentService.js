@@ -13,7 +13,7 @@ export const updateComment = (token, commentId, comment ) => {
     })
 }
 export const deleteComment = (token, commentId) => {
-    axios.delete(REST_API_BASE_URL+`/delete/${commentId}`, {
+    return axios.delete(REST_API_BASE_URL+`/delete/${commentId}`, {
         headers: {'Authorization': `Bearer ${token}`}
     })
 }
