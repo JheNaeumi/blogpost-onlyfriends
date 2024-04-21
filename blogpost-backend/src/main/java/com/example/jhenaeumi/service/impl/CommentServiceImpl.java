@@ -48,10 +48,7 @@ public class CommentServiceImpl implements CommentService {
         User user = comment.getUser();
         if(user.getLogin().equals(logintoken)) {
             comment.setCommentContent(commentDto.getCommentContent());
-            comment.setUser(comment.getUser());
-            comment.setPost(comment.getPost());
             Comment savedComment = commentRepo.save(comment);
-
             return modelMapper.map(savedComment, CommentDto.class);
         }
         else {
