@@ -3,12 +3,11 @@ import { useEffect, useState, useLayoutEffect } from "react"
 import { getAuthToken,setAuthHeader } from "../service/AuthService"
 import { useNavigate } from "react-router-dom";
 import { deleteUserContent, getPostResponse, postUserContent, updateUserContent } from "../service/PostService";
-import { postComment } from "../service/CommentService";
+import { deleteComment, postComment, updateComment } from "../service/CommentService";
 import { getProfile } from "../service/UserDataService";
 const BlogpostComponent = () => {
  
   const navigate = useNavigate();
-  
   const [isOpen, setIsOpen] = useState(false);
   const [isFixed, setIsFixed] = useState(false);
   const [isAuth, setisAuth] = useState(false)
@@ -20,91 +19,91 @@ const BlogpostComponent = () => {
     postTitle: '',
     postContent: '',
   },[]) 
+
   useEffect(() => { 
-          getUserProfileData();
-          //gePostData
-          getPostContent();
+    getUserProfileData();
+    //gePostData
+    getPostContent();
 
-          // Initial call to set initial state
-          handleResize();
-          window.addEventListener('resize', handleResize);
-          return () => {
-            window.removeEventListener('resize', handleResize);
-          };
+    // Initial call to set initial state
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  },[]);
       
-      }, []);
-      
-      //checksWindowSizeForSideBar
-      const handleResize = () => {
-        setIsFixed(window.innerWidth < 768);
-        setIsOpen(window.innerWidth >= 768)
-      };
-      //toggleSidebar
-      const toggleSidebar = () => {
-        setIsOpen(!isOpen);
+  //checksWindowSizeForSideBar
+  const handleResize = () => {
+    setIsFixed(window.innerWidth < 768);
+    setIsOpen(window.innerWidth >= 768)
+  };
+  //toggleSidebar
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen);
+  }
+  //Logging out
+  const logOut = () => {
+    setAuthHeader(null)
+    navigate('/login')
+  }
+  //changePage
+  const handlePageChange = (page) => {
+    setCurrentPage(page)
+    fetchData(page)
+  };
+  const getPostContent= async() => {
+    fetchData(currentPage);
+  }
+  const getUserProfileData = async() =>  {
+    try {
+      const token = getAuthToken()
+      const response = await getProfile(token)
+      if(response.status === 200){
+        setFormData(response.data)
+    }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  //getPostData
+  const fetchData = async (page) => {
+    //TODO: Make it as a Service
+    try {
+      const token = getAuthToken()
+      const response = await getPostResponse(token, page)
+      setisAuth(true)
+      mapContent(response.data.content)
+      console.log(response.data.content)
+      setTotalPages(response.data.totalPages-1)
+      //console.log(response.data.content )
+      //console.log("success")
+    } catch (error) {
+      console.error('Error fetching data:');
+      setAuthHeader(null)
+      navigate('/login')
+    }
+  };
+  const handlePostUserContent = async(e) => {
+    e.preventDefault();
+    try{
+      const token = getAuthToken()
+      const response = await postUserContent(token,content)
+      if(response.status === 201){
+        console.log('Post succesful')
+        setContent('')
+        getPostContent()
       }
-      //Logging out
-      const logOut = () => {
-        setAuthHeader(null)
-        navigate('/login')
-      }
-      //changePage
-      const handlePageChange = (page) => {
-        setCurrentPage(page)
-        fetchData(page)
-      };
-      const getPostContent= async() => {
-        fetchData(currentPage);
-      }
-      const getUserProfileData = async() =>  {
-        try {
-          const token = getAuthToken()
-          const response = await getProfile(token)
-          if(response.status === 200){
-            setFormData(response.data)
-        }
-        } catch (error) {
-          console.log(error)
-        }
-      }
-      //getPostData
-      const fetchData = async (page) => {
-        //TODO: Make it as a Service
-        try {
-          const token = getAuthToken()
-          const response = await getPostResponse(token, page)
-          setisAuth(true)
-          mapContent(response.data.content)
-          console.log(response.data.content)
-          setTotalPages(response.data.totalPages-1)
-          //console.log(response.data.content )
-          //console.log("success")
-        } catch (error) {
-          console.error('Error fetching data:');
-          setAuthHeader(null)
-          navigate('/login')
-        }
-      };
-      const handlePostUserContent = async(e) => {
-        e.preventDefault();
-        try{
-          const token = getAuthToken()
-          const response = await postUserContent(token,content)
-          if(response.status === 201){
-            console.log('Post succesful')
-            setContent('')
-            getPostContent()
-          }
 
-        }catch(error){
-          console.log('Post failed')
-          setContent('')
-        }
-      }
-      //if token is not present
-      if(!isAuth){
-        return null;
-      }
+    }catch(error){
+      console.log('Post failed')
+      setContent('')
+    }
+  }
+  //if token is not present
+  if(!isAuth){
+    return null;
+  }
   
   return (
     <>  
@@ -207,7 +206,21 @@ function Post({ post, getPostContent, formData }) {
   const [postTitle, setUpdatePostTitle] = useState(post.postTitle)
   const [isEditing, setIsEditing] = useState(false);
   const [commentOptionsVisibility, setCommentOptionsVisibility] = useState({});
-
+  const [isEditingComment, setIsEditingComment] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editedCommentContent, setEditedCommentContent] = useState({
+    commentContent:'',
+  });
+  const handleCommentEdit = (commentId, comment) => {
+    setIsEditingComment(true);
+    setEditingCommentId(commentId);
+    setEditedCommentContent({...editedCommentContent,comment})
+  };
+  const cancelCommentEdit = () => {
+    setIsEditingComment(false);
+    setEditingCommentId(null);
+    setEditedCommentContent('');
+  };
   const toggleCommentOption = (commentId) => {
     setCommentOptionsVisibility(prevState => ({
       ...prevState,
@@ -254,11 +267,34 @@ function Post({ post, getPostContent, formData }) {
     }
   }
   const handleUpdateComment = async (commentId) => {
-    // Implement update comment logic here
+    try {
+      const token = getAuthToken()
+      const response = await updateComment(token, commentId, editedCommentContent)
+      const updatedComment = response.data;
+      setmappedComments(mappedComments.map(comment => {
+          if (comment.id === commentId) {
+              return updatedComment;
+          }
+          return comment;
+      }));
+      setIsEditingComment(false);
+      setEditingCommentId(null);
+      setEditedCommentContent('')
+    } catch (error) {
+      console.log(error)
+   
+    }
+
   };
 
   const handleDeleteComment = async (commentId) => {
-    // Implement delete comment logic here
+    try {
+      const token = getAuthToken()
+      await deleteComment(token ,commentId)
+      setmappedComments(mappedComments.filter(comment => comment.id !== commentId));
+    } catch (error) {
+      console.log(error)
+    }
   };
   const addComment = async(e) => {
     e.preventDefault()
@@ -267,13 +303,11 @@ function Post({ post, getPostContent, formData }) {
       const response = await postComment(token, userComment, post.id)
       console.log("Comment Succes", response.status)
       setCommentText('');
-      
       setmappedComments([...mappedComments, response.data]);
     } catch (error) {
       console.log(error)
       setCommentText('')
     }
-
   };
 
   return (
@@ -342,50 +376,63 @@ function Post({ post, getPostContent, formData }) {
       {showComments && (
         <div className="mt-5">
           <h3 className="text-xl font-semibold mb-2">Comments</h3>
-          <ul>
+          <ul className="flex flex-col">
             {/* List of Comments*/}
             {mappedComments.slice().sort((a, b) => a.id - b.id).map((comment) => (
-              <li key={comment.id} className="flex justify-between items-center mb-4 text-gray-500">
-                <div className="flex flex-col mt-2">
-                <span className="bg-primary-100 text-primary-800 text-sm font-medium inline-flex items-center  rounded dark:bg-primary-200 dark:text-primary-800">
-                  <img width="32" height="32" src="https://img.icons8.com/windows/32/user.png" alt="user"/>
-                  {comment.user.firstName} {comment.user.lastName}
-                </span>
-                <span className="text-gray-500 text-sm">{comment.commentContent}</span>
+              <li key={comment.id} className="grid grid-cols-2 mb-4 text-gray-500 max-sm:my-5">
+                <div className="flex mt-2">
+                  <span className=" bg-primary-100 text-primary-800 text-sm font-medium inline-flex items-center rounded dark:bg-primary-200 dark:text-primary-800">
+                    <img width="32" height="32" src="https://img.icons8.com/windows/32/user.png" alt="user"/>
+                    {comment.user.firstName} {comment.user.lastName}
+                  </span>
                 </div>
                 {formData.login === comment.user.login && (
                   <div className="relative text-xs inline-block">
-                    <div className=" flex justify-between text-gray-500">
-                      <button onClick={() => toggleCommentOption(comment.id)} className=" bg-white text-gray-700 focus:outline-none focus:ring-10 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
-                      
-                        <svg className="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <div className=" text-center float-right text-gray-500">
+                      <button onClick={() => toggleCommentOption(comment.id)} className="bg-white text-gray-700 focus:outline-none focus:ring-10 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
+                        <svg className=" mt-4 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                           <path fillRule="evenodd" d="M10 6a2 2 0 100-4 2 2 0 000 4zM2 6a2 2 0 100-4 2 2 0 000 4zm16 0a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                         </svg>
                       </button>
                     </div>
-                  {/* Dropdown menu for Update & Delete Comment*/}
+                    {/* Dropdown menu for Update & Delete Comment*/}
                     {commentOptionsVisibility[comment.id] && (
-                      <div className="origin-top-right absolute top-3 right-0 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex="-1">
-                        <div className=" flex py-1" role="none">
-                          <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabIndex="-1" id="menu-item-0">Update </button>
-                          <button onClick={() => handleDeleteComment(comment.id)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabIndex="-1" id="menu-item-1">Delete </button>
+                      <div className="origin-top-right absolute top-7 right-0 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex="-1">
+                        <div className="flex flex-col sm:flex-row py-1" role="none">
+                          <button onClick={() => {handleCommentEdit(comment.id, comment.commentContent), toggleCommentOption(comment.id)}} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabIndex="-1" id="menu-item-0">Update</button>
+                          <button onClick={() => handleDeleteComment(comment.id)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabIndex="-1" id="menu-item-1">Delete</button>
                         </div>
                       </div>
                     )}
                   </div>
                 )}
+                <div className="grid w-full ">
+                {isEditingComment && editingCommentId === comment.id ? (
+                    <div className=" flex-col mt-2">
+                      <textarea className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary-400" placeholder="Write a comment..." rows="2" name="editedCommentContent" id="editedcommentContent"required value={editedCommentContent.commentContent || '' } onChange={(e) =>setEditedCommentContent({...editedCommentContent, commentContent:e.target.value})} ></textarea>
+                      <div className=" flex flex-col sm:flex-row sm:my-2  mt-2">
+                        <button className="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 max-sm:mb-2  bg-indigo-500" onClick={() => handleUpdateComment(comment.id)}>Update</button>
+                        <button className="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 sm:ml-2 bg-indigo-500" onClick={() => cancelCommentEdit()}>Cancel</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div> 
+                      <span className="text-center text-gray-500 text-sm">{comment.commentContent}</span>
+                    </div>
+                  )}
+                </div>
               </li>
             ))}
           </ul>
+
           <div className="mt-4">
             <textarea className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary-400" placeholder="Write a comment..." rows="3" name="commentContent" id="commentContent" required value={ userComment.commentContent || ''} onChange={(e) => setCommentText({...userComment, commentContent:e.target.value})} ></textarea>
-            <button className="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500" onClick={addComment}>Comment</button>
+            <button className="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 bg-indigo-500" onClick={addComment}>Comment</button>
           </div>
         </div>
       )}
     </article>
   );
 }
-
 
 export default BlogpostComponent
