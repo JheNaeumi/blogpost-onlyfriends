@@ -21,8 +21,8 @@ const BlogpostComponent = () => {
   },[]) 
 
   useEffect(() => { 
+    //Initially get User & Post 
     getUserProfileData();
-    //gePostData
     getPostContent();
 
     // Initial call to set initial state
@@ -33,12 +33,12 @@ const BlogpostComponent = () => {
     };
   },[]);
       
-  //checksWindowSizeForSideBar
+  //Checks WindowSizeForSideBar
   const handleResize = () => {
     setIsFixed(window.innerWidth < 768);
     setIsOpen(window.innerWidth >= 768)
   };
-  //toggleSidebar
+  //ToggleSidebar
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   }
@@ -47,14 +47,16 @@ const BlogpostComponent = () => {
     setAuthHeader(null)
     navigate('/login')
   }
-  //changePage
+  //Checks Each Page change
   const handlePageChange = (page) => {
     setCurrentPage(page)
     fetchData(page)
   };
+  //Get Post according to the current page 
   const getPostContent= async() => {
     fetchData(currentPage);
   }
+  //Get User's Data for identification
   const getUserProfileData = async() =>  {
     try {
       const token = getAuthToken()
@@ -66,9 +68,8 @@ const BlogpostComponent = () => {
       console.log(error)
     }
   }
-  //getPostData
+  //Get List of Post
   const fetchData = async (page) => {
-    //TODO: Make it as a Service
     try {
       const token = getAuthToken()
       const response = await getPostResponse(token, page)
@@ -84,6 +85,7 @@ const BlogpostComponent = () => {
       navigate('/login')
     }
   };
+  //Create New Post
   const handlePostUserContent = async(e) => {
     e.preventDefault();
     try{
@@ -100,7 +102,7 @@ const BlogpostComponent = () => {
       setContent('')
     }
   }
-  //if token is not present
+  //if token is not present return blank page
   if(!isAuth){
     return null;
   }
@@ -237,23 +239,22 @@ function Post({ post, getPostContent, formData }) {
   const handleCancel = () =>{
     setIsEditing(false);
   }
+   //Update User's own post
   const handleUpdatePost = async (e) => {
     e.preventDefault()
     try{
-    // Call the updatePost function with the updated content
     const updatedTitleAndContent = {postTitle, postContent}
     const token = getAuthToken()
     const response = await updateUserContent(token, post.id, updatedTitleAndContent)
-    console.log(response.status)
-    // Close the options menu
+    //console.log(response.status)
     setShowOptions(false);
-    // Reset editing state
     setIsEditing(false);
     getPostContent();
     }catch(error){
       console.log(error)
     }
   };
+  //Delete User's own post
   const handleDeletePost = async(e) => {
     e.preventDefault();
     try {
@@ -266,27 +267,26 @@ function Post({ post, getPostContent, formData }) {
       console.log(error)
     }
   }
+  //Update User's own comment
   const handleUpdateComment = async (commentId) => {
     try {
       const token = getAuthToken()
       const response = await updateComment(token, commentId, editedCommentContent)
       const updatedComment = response.data;
       setmappedComments(mappedComments.map(comment => {
-          if (comment.id === commentId) {
-              return updatedComment;
-          }
-          return comment;
+        if (comment.id === commentId) {
+            return updatedComment;
+        }
+        return comment;
       }));
       setIsEditingComment(false);
       setEditingCommentId(null);
       setEditedCommentContent('')
     } catch (error) {
       console.log(error)
-   
     }
-
   };
-
+  //Delete User's own comment
   const handleDeleteComment = async (commentId) => {
     try {
       const token = getAuthToken()
@@ -296,6 +296,7 @@ function Post({ post, getPostContent, formData }) {
       console.log(error)
     }
   };
+  //Create a comment on a specific post
   const addComment = async(e) => {
     e.preventDefault()
     try {
@@ -406,6 +407,7 @@ function Post({ post, getPostContent, formData }) {
                     )}
                   </div>
                 )}
+                {/* Edit/Update Comment */}
                 <div className="grid w-full ">
                 {isEditingComment && editingCommentId === comment.id ? (
                     <div className=" flex-col mt-2">
@@ -424,7 +426,6 @@ function Post({ post, getPostContent, formData }) {
               </li>
             ))}
           </ul>
-
           <div className="mt-4">
             <textarea className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary-400" placeholder="Write a comment..." rows="3" name="commentContent" id="commentContent" required value={ userComment.commentContent || ''} onChange={(e) => setCommentText({...userComment, commentContent:e.target.value})} ></textarea>
             <button className="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 bg-indigo-500" onClick={addComment}>Comment</button>
