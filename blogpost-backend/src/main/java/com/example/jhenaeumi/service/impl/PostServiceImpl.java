@@ -11,6 +11,7 @@ import com.example.jhenaeumi.repository.PostRepo;
 import com.example.jhenaeumi.repository.UserRepo;
 import com.example.jhenaeumi.service.PostService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.mapstruct.control.MappingControl;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+@RequiredArgsConstructor
 @Service
 public class PostServiceImpl implements PostService {
 
@@ -105,7 +107,7 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    //TODO: UpdatePostService (must be user own post) same with Delete
+   
     @Override
     public void deletePost(String token,Long postId) {
         String logintoken = userService.validateToken(token);
