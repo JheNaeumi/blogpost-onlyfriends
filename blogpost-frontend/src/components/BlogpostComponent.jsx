@@ -374,64 +374,83 @@ function Post({ post, getPostContent, formData }) {
         </button>
       </div>
        {/*Option to Show Comments of Each Post */}
-      {showComments && (
+       {showComments && (
         <div className="mt-5">
           <h3 className="text-xl font-semibold mb-2">Comments</h3>
-          <ul className="flex flex-col">
-            {/* List of Comments*/}
+          <ul>
             {mappedComments.slice().sort((a, b) => a.id - b.id).map((comment) => (
-              <li key={comment.id} className="grid grid-cols-2 mb-4 text-gray-500 max-sm:my-5">
-                <div className="flex mt-2">
-                  <span className=" bg-primary-100 text-primary-800 text-sm font-medium inline-flex items-center rounded dark:bg-primary-200 dark:text-primary-800">
-                    <img width="32" height="32" src="https://img.icons8.com/windows/32/user.png" alt="user"/>
+              <li key={comment.id} className="flex flex-col mb-4 text-gray-500 max-sm:my-5">
+                <div className="flex items-start mb-2 max-sm:mb-7">
+                  <img width="32" height="32" src="https://img.icons8.com/windows/32/user.png" alt="user" className="mr-2"/>
+                  <span className="bg-primary-100 text-primary-800 text-sm font-medium inline-flex items-center rounded dark:bg-primary-200 dark:text-primary-800">
                     {comment.user.firstName} {comment.user.lastName}
                   </span>
-                </div>
-                {formData.login === comment.user.login && (
-                  <div className="relative text-xs inline-block">
-                    <div className=" text-center float-right text-gray-500">
+                  {formData.login === comment.user.login && (
+                    <div className="relative ml-auto">
                       <button onClick={() => toggleCommentOption(comment.id)} className="bg-white text-gray-700 focus:outline-none focus:ring-10 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
-                        <svg className=" mt-4 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <svg className="mt-2 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                           <path fillRule="evenodd" d="M10 6a2 2 0 100-4 2 2 0 000 4zM2 6a2 2 0 100-4 2 2 0 000 4zm16 0a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                         </svg>
                       </button>
-                    </div>
-                    {/* Dropdown menu for Update & Delete Comment*/}
-                    {commentOptionsVisibility[comment.id] && (
-                      <div className="origin-top-right absolute top-7 right-0 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex="-1">
-                        <div className="flex flex-col sm:flex-row py-1" role="none">
-                          <button onClick={() => {handleCommentEdit(comment.id, comment.commentContent), toggleCommentOption(comment.id)}} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabIndex="-1" id="menu-item-0">Update</button>
-                          <button onClick={() => handleDeleteComment(comment.id)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabIndex="-1" id="menu-item-1">Delete</button>
+                      {/* Dropdown menu for Update & Delete Comment*/}
+                      {commentOptionsVisibility[comment.id] && (
+                        <div className="origin-top-right absolute top-4 right-0 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex="-1">
+                          <div className="flex flex-col sm:flex-row py-1" role="none">
+                            <button onClick={() => {handleCommentEdit(comment.id, comment.commentContent); toggleCommentOption(comment.id)}} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabIndex="-1" id="menu-item-0">Update</button>
+                            <button onClick={() => handleDeleteComment(comment.id)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem" tabIndex="-1" id="menu-item-1">Delete</button>
+                          </div>
                         </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <div className="flex">
+                  {/* Edit/Update Comment */}
+                  <div className="flex flex-col flex-grow">
+                    {isEditingComment && editingCommentId === comment.id ? (
+                      <div className="mt-2">
+                        <textarea 
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary-400" 
+                          placeholder="Write a comment..." 
+                          rows="2" 
+                          name="editedCommentContent" 
+                          id="editedcommentContent"
+                          required 
+                          value={editedCommentContent.commentContent || ''}
+                          onChange={(e) => setEditedCommentContent({...editedCommentContent, commentContent:e.target.value})}
+                        ></textarea>
+                        <div className="flex flex-row mt-2">
+                          <button className="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 bg-indigo-500" onClick={() => handleUpdateComment(comment.id)}>Update</button>
+                          <button className="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500" onClick={() => cancelCommentEdit()}>Cancel</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex-grow"> 
+                        {/* Display Comment */}
+                        <span className="text-gray-500 text-sm">{comment.commentContent}</span>
                       </div>
                     )}
                   </div>
-                )}
-                {/* Edit/Update Comment */}
-                <div className="grid w-full ">
-                {isEditingComment && editingCommentId === comment.id ? (
-                    <div className=" flex-col mt-2">
-                      <textarea className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary-400" placeholder="Write a comment..." rows="2" name="editedCommentContent" id="editedcommentContent"required value={editedCommentContent.commentContent || '' } onChange={(e) =>setEditedCommentContent({...editedCommentContent, commentContent:e.target.value})} ></textarea>
-                      <div className=" flex flex-col sm:flex-row sm:my-2  mt-2">
-                        <button className="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 max-sm:mb-2  bg-indigo-500" onClick={() => handleUpdateComment(comment.id)}>Update</button>
-                        <button className="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 sm:ml-2 bg-indigo-500" onClick={() => cancelCommentEdit()}>Cancel</button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div> 
-                      <span className="text-center text-gray-500 text-sm">{comment.commentContent}</span>
-                    </div>
-                  )}
                 </div>
               </li>
             ))}
           </ul>
+          {/* Comment Input Section */}
           <div className="mt-4">
-            <textarea className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary-400" placeholder="Write a comment..." rows="3" name="commentContent" id="commentContent" required value={ userComment.commentContent || ''} onChange={(e) => setCommentText({...userComment, commentContent:e.target.value})} ></textarea>
+            <textarea 
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary-400" 
+              placeholder="Write a comment..." 
+              rows="3" 
+              name="commentContent" 
+              id="commentContent" 
+              required 
+              value={userComment.commentContent || ''}
+              onChange={(e) => setCommentText({...userComment, commentContent:e.target.value})}
+            ></textarea>
             <button className="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 bg-indigo-500" onClick={addComment}>Comment</button>
           </div>
         </div>
-      )}
+       )}
     </article>
   );
 }
