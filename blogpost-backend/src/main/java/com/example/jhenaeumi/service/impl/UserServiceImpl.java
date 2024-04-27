@@ -4,7 +4,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.example.jhenaeumi.config.UserAuthenticationProvider;
 import com.example.jhenaeumi.dto.CredentialsDto;
 import com.example.jhenaeumi.dto.PostUserDto;
 import com.example.jhenaeumi.dto.SignUpDto;
@@ -16,12 +15,10 @@ import com.example.jhenaeumi.mappers.UserMapper;
 import com.example.jhenaeumi.repository.UserRepo;
 import com.example.jhenaeumi.service.UserService;
 import jakarta.annotation.PostConstruct;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,7 +27,6 @@ import java.nio.CharBuffer;
 import java.util.Base64;
 import java.util.Optional;
 
-import org.springframework.http.HttpHeaders;
 
 
 @RequiredArgsConstructor
