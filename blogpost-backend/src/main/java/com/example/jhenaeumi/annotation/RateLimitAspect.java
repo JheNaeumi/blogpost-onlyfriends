@@ -1,6 +1,5 @@
 package com.example.jhenaeumi.annotation;
 
-
 import com.example.jhenaeumi.exceptions.AppException;
 import com.example.jhenaeumi.service.impl.UserServiceImpl;
 import io.github.bucket4j.Bandwidth;
@@ -23,11 +22,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class RateLimitAspect {
 
-
+    private final Map<String, Bucket> userBuckets = new ConcurrentHashMap<>();
     @Autowired
     private UserServiceImpl userService;
-    private final Map<String, Bucket> userBuckets = new ConcurrentHashMap<>();
-
     @Pointcut("@annotation(rateLimited)")
     public void rateLimitedMethods(RateLimited rateLimited) {}
 
@@ -35,12 +32,12 @@ public class RateLimitAspect {
     public Object checkRateLimit(ProceedingJoinPoint joinPoint, RateLimited rateLimited, String token) throws Throwable {
         String userId = getUserId(token); // Get user ID using the token
 
-        String key = rateLimited.value() + "_" + userId; // Unique key for each user's rate limit bucket
+        String key = rateLimited.name() + "_" + userId; // Unique key for each user's rate limit bucket
         if (!userBuckets.containsKey(key)) {
             synchronized (this) {
                 if (!userBuckets.containsKey(key)) {
                     // Define rate limit parameters
-                    Bandwidth limit = Bandwidth.classic(2, Refill.intervally(10, Duration.ofMinutes(1)));
+                    Bandwidth limit = Bandwidth.classic(10, Refill.intervally(rateLimited.value(), Duration.ofMinutes(rateLimited.minutes())));
 
                     // Create a Bucket using Bucket4j
                     Bucket bucket = Bucket4j.builder().addLimit(limit).build();
@@ -68,3 +65,6 @@ public class RateLimitAspect {
         return logintoken; // Dummy implementation, replace with actual logic to get user ID
     }
 }
+
+
+         //
