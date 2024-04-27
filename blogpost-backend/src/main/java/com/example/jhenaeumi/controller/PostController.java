@@ -1,10 +1,15 @@
 package com.example.jhenaeumi.controller;
 
+
+
+import com.example.jhenaeumi.annotation.RateLimited;
 import com.example.jhenaeumi.config.ApplicationConstants;
 import com.example.jhenaeumi.dto.PostDto;
 import com.example.jhenaeumi.dto.PostResponseDto;
-import com.example.jhenaeumi.entity.Post;
+
 import com.example.jhenaeumi.service.PostService;
+
+
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,11 +25,12 @@ public class PostController {
     @Autowired
     PostService postService;
 
+    @RateLimited(name = "createPost", token = "{token}", value = 2)
     @PostMapping("/user/category/{categoryId}")
     public ResponseEntity<PostDto> createPost(@RequestHeader("Authorization") String token, @Valid @RequestBody PostDto postDto, @PathVariable Long categoryId){
         PostDto createdPost = this.postService.createPost(token, postDto,categoryId);
-
         return new ResponseEntity<PostDto>(createdPost, HttpStatus.CREATED);
+
     }
     @GetMapping("/user/all")
     public ResponseEntity<PostResponseDto> getAllPost(
@@ -40,6 +46,7 @@ public class PostController {
         return new ResponseEntity<List<PostDto>>(postDto, HttpStatus.OK);
     }
 
+    @RateLimited(name = "updatePost", token = "{token}", value = 2)
     @PatchMapping("/user/update/{postId}")
     public ResponseEntity<PostDto> updatePost(@RequestHeader("Authorization") String token, @Valid @RequestBody PostDto postDto, @PathVariable("postId") Long postId){
         PostDto updatedPost = postService.updatePost(token, postDto, postId);
