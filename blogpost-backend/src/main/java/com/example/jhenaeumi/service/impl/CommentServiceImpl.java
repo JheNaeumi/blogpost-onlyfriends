@@ -10,7 +10,6 @@ import com.example.jhenaeumi.repository.PostRepo;
 import com.example.jhenaeumi.repository.UserRepo;
 import com.example.jhenaeumi.service.CommentService;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -59,7 +58,6 @@ public class CommentServiceImpl implements CommentService {
 
     }
 
-    //TODO: updateCommentService (Must Be user own Comment) same with Delete
     @Override
     public void deleteComment(String token, Long commentId) {
         Comment comment = commentRepo.findById(commentId).orElseThrow(() -> new AppException("Unknown comment", HttpStatus.NOT_FOUND));
