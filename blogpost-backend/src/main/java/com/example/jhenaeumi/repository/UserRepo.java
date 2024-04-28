@@ -14,6 +14,6 @@ import java.util.Optional;
 public interface UserRepo extends JpaRepository<User, Long> {
     Optional<User> findByLogin(String login);
 
-    Optional<User> findByfirstName(String fname);
-
+    @Query(value = "SELECT * FROM user WHERE CONCAT(first_name, ' ', last_name) LIKE %:name% OR CONCAT(first_name, last_name) LIKE %:name%", nativeQuery = true)
+    List<User> findByFirstNameOrLastName(String name);
 }
