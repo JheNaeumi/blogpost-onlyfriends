@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/user")
@@ -26,6 +28,11 @@ public class UserController {
     public ResponseEntity<PostUserDto> getProfile(@RequestHeader("Authorization") String token){
         PostUserDto getuser = userService.getUserProfile(token);
         return new ResponseEntity<>(getuser, HttpStatus.OK);
+    }
+    @GetMapping("/profile/list")
+    public ResponseEntity<List<PostUserDto>> listAllUser(@RequestHeader("Authorization") String token, @RequestParam(value = "searchQuery", defaultValue = "", required = false) String searchQuery){
+        List<PostUserDto> postUserDtoList = userService.listAllUser(searchQuery);
+        return new ResponseEntity<>(postUserDtoList, HttpStatus.OK);
     }
 
 }
