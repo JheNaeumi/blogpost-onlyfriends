@@ -15,5 +15,10 @@ export const getProfile = (token) => {
   })
 }
 
+export const getListofUser = (token, search) =>{
+  return axios.get(REST_API_BASE_URL+`/profile/list?searchQuery=${search}`, {
+    headers: {'Authorization': `Bearer ${token}`}})
+}
+
 
 
