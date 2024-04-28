@@ -5,6 +5,8 @@ import com.example.jhenaeumi.dto.PostUserDto;
 import com.example.jhenaeumi.dto.SignUpDto;
 import com.example.jhenaeumi.dto.UserDto;
 
+import java.util.List;
+
 public interface UserService {
     UserDto login(CredentialsDto credentialsDto);
 
@@ -17,4 +19,6 @@ public interface UserService {
     PostUserDto getUserProfile(String logintoken);
 
     String validateToken(String logintoken);
+
+    List<PostUserDto> listAllUser(String name);
 }
