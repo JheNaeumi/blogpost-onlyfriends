@@ -25,8 +25,9 @@ import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
-
+import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
@@ -121,6 +122,13 @@ public class UserServiceImpl implements UserService {
 
         DecodedJWT decoded = verifier.verify(login);
         return decoded.getSubject();
+    }
+
+    @Override
+    public List<PostUserDto> listAllUser(String name) {
+        List<User> user = userRepository.findByFirstNameOrLastName(name);
+        List<PostUserDto> userDto = user.stream().map((user1)->modelMapper.map(user1, PostUserDto.class )).collect(Collectors.toList());
+        return userDto;
     }
 
 }
