@@ -30,7 +30,7 @@ public class UserController {
         return new ResponseEntity<>(getuser, HttpStatus.OK);
     }
     @GetMapping("/profile/list")
-    public ResponseEntity<List<PostUserDto>> listAllUser(@RequestHeader("Authorization") String token, @RequestParam(value = "searchQuery", defaultValue = "", required = false) String searchQuery){
+    public ResponseEntity<List<PostUserDto>> listAllUser(@RequestHeader("Authorization") String token, @RequestParam(value = "searchQuery", required = true) String searchQuery){
         List<PostUserDto> postUserDtoList = userService.listAllUser(searchQuery);
         return new ResponseEntity<>(postUserDtoList, HttpStatus.OK);
     }
