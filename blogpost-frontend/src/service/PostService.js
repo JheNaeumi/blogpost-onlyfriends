@@ -8,8 +8,8 @@ export const getPostResponse = (token, page) => {
      headers: {'Authorization': `Bearer ${token}`}})
  }
  
- export const getPostUser = (token, name) => {
-     return axios.get(REST_API_BASE_URL+`/user/${name}/all`, {
+ export const getPostUser = (token, id) => {
+     return axios.get(REST_API_BASE_URL+`/user/${id}/all`, {
          headers: {'Authorization': `Bearer ${token}`}})
  }
  
