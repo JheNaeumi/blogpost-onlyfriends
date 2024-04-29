@@ -2,9 +2,9 @@ import { useEffect, useState, useLayoutEffect } from "react"
 
 import { getAuthToken,setAuthHeader } from "../service/AuthService"
 import { useNavigate } from "react-router-dom";
-import { deleteUserContent, getPostResponse, postUserContent, updateUserContent } from "../service/PostService";
+import { deleteUserContent, getPostResponse, getPostUser, postUserContent, updateUserContent } from "../service/PostService";
 import { deleteComment, postComment, updateComment } from "../service/CommentService";
-import { getProfile } from "../service/UserDataService";
+import { getListofUser, getProfile } from "../service/UserDataService";
 const BlogpostComponent = () => {
  
   const navigate = useNavigate();
@@ -102,6 +102,51 @@ const BlogpostComponent = () => {
       setContent('')
     }
   }
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchingUser, setSearchingUser] = useState(false);
+  const [searchedUser, setUser] = useState([])
+  const toggleSearch = () => {
+    setIsSearching(!isSearching);
+  };
+
+  const handleSearch = (e) => {
+    const { value } = e.target;
+      setSearchTerm(value);
+      setIsSearching(value !== null && value.trim() !== '');
+      
+  };
+  const handleEnterKey = async(event) =>{
+    if (event.key === 'Enter') {
+      // Prevent default behavior of form submission
+      event.preventDefault();
+      
+      // Call your search function here
+      // For example:
+      const token = getAuthToken();
+      const response =  await getListofUser(token, searchTerm);
+      const filteredResults = response.data; // Your filtered search results
+      setSearchResults(filteredResults);
+      
+    }
+  }
+
+  const handleSelectResult = async(id, firstName, lastName) => {
+    // Handle the selection of a search result
+    try {
+      const searchname = {firstName, lastName}
+      const token = getAuthToken();
+      const response = await getPostUser(token, id);
+      mapContent(response.data)
+      setUser(searchname)
+      toggleSearch()
+      setSearchingUser(true);
+    } catch (error) {
+      console.log(error)
+    }
+  };
+  
   //if token is not present return blank page
   if(!isAuth){
     return null;
@@ -124,15 +169,37 @@ const BlogpostComponent = () => {
           </div>      
           <div className="overflow-y-auto">
             <ul className="space-y-8 font-medium">
-              <li>
-                <a href="" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                  <svg className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
+              <div className="relative">
+                <div className="flex items-center">
+                  <svg className="ms-2 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
                     <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z"/>
                     <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z"/>
                   </svg>
-                  <span className="ms-3">Dashboard</span>
-                </a>
-              </li>  
+                  <input
+                    type="text"
+                    placeholder="Search User"
+                    className=" ms-3 w-32 px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-indigo-500"
+                    value={searchTerm}
+                    onKeyDown={handleEnterKey}
+                    onChange={handleSearch}
+                  />
+                </div>
+                {isSearching && (
+                  <div className="absolute z-10  w-3/4 ml-10 mt-1.5 bg-white border rounded shadow-lg">
+                    {searchResults.length > 0 ? (
+                      <ul>
+                        {searchResults.map((result) => (
+                          <li key={result.id}>
+                            <button className="block w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleSelectResult(result.id, result.firstName, result.lastName)} > {result.firstName} {result.lastName} </button>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="p-4">No results found</p>
+                    )}
+                  </div>
+                )}
+              </div>
               <li>
                 <a href="/profile" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                   <svg className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
@@ -161,29 +228,46 @@ const BlogpostComponent = () => {
                   <path clipRule="evenodd" fillRule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
                 </svg>
               </button>
-               {/* Create New Post */}    
-              <div className="heading text-center font-bold text-2xl m-5 text-gray-800">New Post</div>
-              <div className="editor mx-auto w-10/12 flex flex-col text-gray-800 border border-gray-300 p-4 shadow-lg max-w-2xl rounded-lg">
-                <input className="title bg-gray-100 border border-gray-300 p-2 mb-4 outline-none" spellCheck="false" placeholder="Title" type="text" id="postTitle" name="postTitle" required value={content.postTitle || ''} onChange={(e) => setContent({...content, postTitle:e.target.value})}/>
-                <textarea className="description bg-gray-100 sec p-3 h-40 border border-gray-300 outline-none" spellCheck="false" placeholder="Describe everything about this post here"name="postContent" id="postContent" required value={content.postContent || ''} onChange={(e)=> setContent({...content, postContent:e.target.value})}></textarea>
-                <div className="icons flex text-gray-500 m-2">
-                  <div className="count ml-auto text-gray-400 text-xs font-semibold">0/300</div>
-                </div>
-                <div className="buttons flex">
-                  <button className="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500" onClick={handlePostUserContent}>Post</button>
-                </div>
+               {/* Create New Post */}
+              {searchingUser ? (
+              <div>
+                  <div className="flex flex-col items-center justify-center py-2 dark:border-gray-600">
+                    <img width="96" height="96" src="https://img.icons8.com/windows/96/user.png" alt="user"/>
+                    <span className="text-xl font-semibold flex justify-center">{searchedUser.firstName} {searchedUser.lastName}</span>
+                    <a href="/" className=" float-right">
+                      <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+                      <path d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 8.7070312 7.2929688 L 7.2929688 8.7070312 L 10.585938 12 L 7.2929688 15.292969 L 8.7070312 16.707031 L 12 13.414062 L 15.292969 16.707031 L 16.707031 15.292969 L 13.414062 12 L 16.707031 8.7070312 L 15.292969 7.2929688 L 12 10.585938 L 8.7070312 7.2929688 z"></path>
+                      </svg>
+                    </a>
+                  </div>      
               </div>
+              ): (
+                <div>
+                  <div className="heading text-center font-bold text-2xl m-5 text-gray-800">New Post</div>
+                  <div className="editor mx-auto w-10/12 flex flex-col text-gray-800 border border-gray-300 p-4 shadow-lg max-w-2xl rounded-lg">
+                    <input className="title bg-gray-100 border border-gray-300 p-2 mb-4 outline-none" spellCheck="false" placeholder="Title" type="text" id="postTitle" name="postTitle" required value={content.postTitle || ''} onChange={(e) => setContent({...content, postTitle:e.target.value})}/>
+                    <textarea className="description bg-gray-100 sec p-3 h-40 border border-gray-300 outline-none" spellCheck="false" placeholder="Describe everything about this post here"name="postContent" id="postContent" required value={content.postContent || ''} onChange={(e)=> setContent({...content, postContent:e.target.value})}></textarea>
+                    <div className="icons flex text-gray-500 m-2">
+                      <div className="count ml-auto text-gray-400 text-xs font-semibold">0/300</div>
+                    </div>
+                    <div className="buttons flex">
+                      <button className="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500" onClick={handlePostUserContent}>Post</button>
+                    </div>
+                  </div>
+                </div>
+              )}
                {/* List of Post */}
               <div className="flex justify-center">
-                <div className="grid gap-8 grid-cols-1 pt-12 px-2 w-2/3 ">
+                <div className="grid gap-8 grid-cols-1 pt-9 px-2 w-2/3 ">
                   {mappedContent.map((post) => (
                     <Post key={post.id} post={post} getPostContent={getPostContent} formData={formData}/>
                   ))}
                 </div>
               </div>  
             </div> 
-          </div> 
-          <div className="flex ">
+          </div>
+          {!searchingUser && (
+          <div className="flex dark:bg-gray-900">
             <button disabled={currentPage === 0} onClick={() => handlePageChange(currentPage - 1)} className="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
               Previous
             </button>
@@ -191,6 +275,7 @@ const BlogpostComponent = () => {
               Next
             </button>
           </div>
+          )}
         </div>
       </div>
     </>
@@ -323,7 +408,7 @@ function Post({ post, getPostContent, formData }) {
         {post.user.login === formData.login && (
         <div className="relative text-xs inline-block">
           <div className="flex justify-between items-center text-gray-500">
-            <button onClick={toggleOptions} className=" inline-flex w-full bg-white text-gray-700 focus:outline-none focus:ring-10 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
+            <button onClick={toggleOptions} className=" inline-flex w-full text-gray-700 focus:outline-none focus:ring-10 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
               <svg className=" mt-3 mr-2 h-5 w-5 " xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                 <path fillRule="evenodd" d="M10 6a2 2 0 100-4 2 2 0 000 4zM2 6a2 2 0 100-4 2 2 0 000 4zm16 0a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
               </svg>
@@ -387,7 +472,7 @@ function Post({ post, getPostContent, formData }) {
                   </span>
                   {formData.login === comment.user.login && (
                     <div className="relative ml-auto">
-                      <button onClick={() => toggleCommentOption(comment.id)} className="bg-white text-gray-700 focus:outline-none focus:ring-10 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
+                      <button onClick={() => toggleCommentOption(comment.id)} className=" text-gray-700 focus:outline-none focus:ring-10 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
                         <svg className="mt-2 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                           <path fillRule="evenodd" d="M10 6a2 2 0 100-4 2 2 0 000 4zM2 6a2 2 0 100-4 2 2 0 000 4zm16 0a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                         </svg>
