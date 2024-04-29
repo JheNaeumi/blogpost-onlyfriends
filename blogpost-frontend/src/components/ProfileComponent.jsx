@@ -54,9 +54,9 @@ const ProfileComponent = () => {
   }
   return (
     <>
-      <div className="h-full mx-auto px-6 py-12 lg:px-8 ">
-        <div className="border-b-2 block md:flex rounded-lg">
-          <div className="w-full md:w-2/5 p-4 sm:p-6 lg:p-8 bg-white shadow-md">
+      <div className=" overflow-y-auto h-screen lg:px-8 dark:bg-gray-800">
+        <div className="block md:flex px-6 py-12">
+          <div className="w-full md:w-2/5 p-4 sm:p-6 lg:p-8 bg-white shadow-md dark:bg-gray-400 rounded-lg">
             <span className="text-xl font-semibold block">User Profile</span>
             <span className="text-gray-600">This information is sensitive</span>
             <div className="w-full p-8 mx-2 flex justify-center">
