@@ -11,7 +11,7 @@ public interface PostService {
 
     PostResponseDto getAllPost(Integer pageNumber, Integer pageSize, String sortBy);
 
-    List<PostDto> getAllPostByUser(String name);
+    List<PostDto> getAllPostByUser(Long id);
 
     PostDto updatePost(String token ,PostDto postDto, Long postId);
     void deletePost(String token, Long postId);
