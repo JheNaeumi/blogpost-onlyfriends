@@ -2,6 +2,7 @@ package com.example.jhenaeumi.repository;
 
 import com.example.jhenaeumi.entity.Post;
 import com.example.jhenaeumi.entity.User;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +15,7 @@ import java.util.Optional;
 public interface UserRepo extends JpaRepository<User, Long> {
     Optional<User> findByLogin(String login);
 
-    @Query(value = "SELECT * FROM user WHERE CONCAT(first_name, ' ', last_name) LIKE %:name% OR CONCAT(first_name, last_name) LIKE %:name%", nativeQuery = true)
-    List<User> findByFirstNameOrLastName(String name);
+
+    @Query(value = "SELECT * FROM user WHERE CONCAT(first_name, ' ', last_name) LIKE %:name% OR CONCAT(first_name, last_name) LIKE %:name% OR first_name LIKE %:name% OR last_name LIKE %:name%", nativeQuery = true)
+    List<User> findByFirstNameOrLastName(String name, Pageable pageable);
 }
