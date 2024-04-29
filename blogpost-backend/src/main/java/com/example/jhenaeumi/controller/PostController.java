@@ -40,9 +40,9 @@ public class PostController {
         PostResponseDto responeDto = this.postService.getAllPost(pageNumber,pageSize, sortBy);
         return new ResponseEntity<PostResponseDto>(responeDto, HttpStatus.OK);
     }
-    @GetMapping("/user/{name}/all")
-    public ResponseEntity<List<PostDto>> getPostByUser(@PathVariable("name") String name){
-        List<PostDto> postDto = postService.getAllPostByUser(name);
+    @GetMapping("/user/{id}/all")
+    public ResponseEntity<List<PostDto>> getPostByUser(@PathVariable("id") Long id){
+        List<PostDto> postDto = postService.getAllPostByUser(id);
         return new ResponseEntity<List<PostDto>>(postDto, HttpStatus.OK);
     }
 
