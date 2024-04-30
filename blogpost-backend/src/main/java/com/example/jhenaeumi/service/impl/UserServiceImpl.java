@@ -19,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -126,7 +128,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<PostUserDto> listAllUser(String name) {
-        List<User> user = userRepository.findByFirstNameOrLastName(name);
+        Pageable pageable = PageRequest.of(0,3);
+        List<User> user = userRepository.findByFirstNameOrLastName(name, pageable);
         List<PostUserDto> userDto = user.stream().map((user1)->modelMapper.map(user1, PostUserDto.class )).collect(Collectors.toList());
         return userDto;
     }
