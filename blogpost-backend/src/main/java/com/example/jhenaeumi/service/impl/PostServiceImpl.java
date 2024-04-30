@@ -83,8 +83,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getAllPostByUser(String name) {
-        User user = userRepo.findByfirstName(name).orElseThrow(()-> new AppException("Unknown User", HttpStatus.NOT_FOUND));
+    public List<PostDto> getAllPostByUser(Long id) {
+        User user = userRepo.findById(id).orElseThrow(()-> new AppException("Unknown User", HttpStatus.NOT_FOUND));
         List<Post> listofPostByUser = postRepo.findByUser(user);
         List<PostDto> postDto = listofPostByUser.stream().map((post)-> modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
         return postDto;
