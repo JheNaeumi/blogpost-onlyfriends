@@ -56,7 +56,7 @@ const RegistrationComponent = () => {
   }
   return (
     <>
-      <div className="flex min-h-full flex-col flex-1 justify-center px-6 py-8 lg:px-8">
+      <div className="flex flex-col h-screen dark:bg-gray-500 overflow-y-auto justify-center px-6 py-8 lg:px-8">
         <div className="grid grid-cols-3">
           <a href="/login" className=" mt-1 w-5 h-5">
             <img className="w-5 h-5 dark:hover:bg-transparent"src="https://img.icons8.com/metro/26/back.png" alt="back"/>
