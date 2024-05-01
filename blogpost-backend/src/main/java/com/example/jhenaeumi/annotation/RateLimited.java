@@ -11,7 +11,7 @@ public @interface RateLimited {
     String name() default ""; // This can be used to identify different rate limit configurations
     String token() default ""; // Parameter for passing the token
 
-    int value() default 2;
+    int value() default 2; // Default Number of Request
 
-    long minutes() default 1;
+    long minutes() default 1; // Duration for Number of Request
 }
