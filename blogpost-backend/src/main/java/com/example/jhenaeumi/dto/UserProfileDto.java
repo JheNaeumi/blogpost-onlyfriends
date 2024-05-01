@@ -4,9 +4,12 @@ import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Data
-@Builder
-public class CredentialsDto {
+public class UserProfileDto {
+    private Long id;
+    private String firstName;
+    private String lastName;
     private String login;
-    private char[] password;
 }

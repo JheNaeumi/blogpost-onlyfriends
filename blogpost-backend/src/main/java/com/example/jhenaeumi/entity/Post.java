@@ -25,16 +25,11 @@ public class Post {
     @Column( name = "post_title", length = 100, nullable = false)
     private String postTitle;
 
-    @Column(name = "post_content", length=2000)
+    @Column(name = "post_content", length=300)
     private String postContent;
-
-//    TODO: add image in post
-//    @Column(name = "post_image")
-//    private String postImage;
 
     @Column(name = "post_date")
     private Date postCreatedDate;
-
 
     @ManyToOne
     @JoinColumn(name = "category_id")

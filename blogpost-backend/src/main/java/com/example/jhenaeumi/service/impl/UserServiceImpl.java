@@ -4,8 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.example.jhenaeumi.dto.CredentialsDto;
-import com.example.jhenaeumi.dto.PostUserDto;
+import com.example.jhenaeumi.dto.LoginDto;
+import com.example.jhenaeumi.dto.UserProfileDto;
 import com.example.jhenaeumi.dto.SignUpDto;
 import com.example.jhenaeumi.dto.UserDto;
 import com.example.jhenaeumi.entity.User;
@@ -54,11 +54,11 @@ public class UserServiceImpl implements UserService {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
     @Override
-    public UserDto login(CredentialsDto credentialsDto) {
-        User user = userRepository.findByLogin(credentialsDto.getLogin())
+    public UserDto login(LoginDto loginDto) {
+        User user = userRepository.findByLogin(loginDto.getLogin())
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
 
-        if (passwordEncoder.matches(CharBuffer.wrap(credentialsDto.getPassword()), user.getPassword())) {
+        if (passwordEncoder.matches(CharBuffer.wrap(loginDto.getPassword()), user.getPassword())) {
             return userMapper.toUserDto(user);
         }
         throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
@@ -105,12 +105,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PostUserDto getUserProfile(String logintoken) {
+    public UserProfileDto getUserProfile(String logintoken) {
         String login = validateToken(logintoken);
         User user = userRepository.findByLogin(login)
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
 
-        return modelMapper.map(user, PostUserDto.class);
+        return modelMapper.map(user, UserProfileDto.class);
     }
 
     @Override
@@ -127,10 +127,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<PostUserDto> listAllUser(String name) {
+    public List<UserProfileDto> listAllUser(String name) {
         Pageable pageable = PageRequest.of(0,3);
         List<User> user = userRepository.findByFirstNameOrLastName(name, pageable);
-        List<PostUserDto> userDto = user.stream().map((user1)->modelMapper.map(user1, PostUserDto.class )).collect(Collectors.toList());
+        List<UserProfileDto> userDto = user.stream().map((user1)->modelMapper.map(user1, UserProfileDto.class )).collect(Collectors.toList());
         return userDto;
     }
 

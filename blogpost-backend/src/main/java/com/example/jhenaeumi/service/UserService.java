@@ -1,14 +1,14 @@
 package com.example.jhenaeumi.service;
 
-import com.example.jhenaeumi.dto.CredentialsDto;
-import com.example.jhenaeumi.dto.PostUserDto;
+import com.example.jhenaeumi.dto.LoginDto;
+import com.example.jhenaeumi.dto.UserProfileDto;
 import com.example.jhenaeumi.dto.SignUpDto;
 import com.example.jhenaeumi.dto.UserDto;
 
 import java.util.List;
 
 public interface UserService {
-    UserDto login(CredentialsDto credentialsDto);
+    UserDto login(LoginDto loginDto);
 
     UserDto register(SignUpDto signUpDto);
 
@@ -16,9 +16,9 @@ public interface UserService {
 
     UserDto updateUserProfile(String logintoken, SignUpDto signUpDto);
 
-    PostUserDto getUserProfile(String logintoken);
+    UserProfileDto getUserProfile(String logintoken);
 
     String validateToken(String logintoken);
 
-    List<PostUserDto> listAllUser(String name);
+    List<UserProfileDto> listAllUser(String name);
 }

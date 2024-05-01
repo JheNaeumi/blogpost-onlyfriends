@@ -25,12 +25,11 @@ public class PostDto {
     @Size(min = 10)
     private String postContent;
 
-    private PostUserDto user;
+    private UserProfileDto user;
 
     private Date postCreatedDate;
 
     private CategoryDto category;
-
 
     private Set<CommentDto> comments =  new HashSet<>();
 }

@@ -1,7 +1,7 @@
 package com.example.jhenaeumi.service.impl;
 
+import com.example.jhenaeumi.dto.ListPostDto;
 import com.example.jhenaeumi.dto.PostDto;
-import com.example.jhenaeumi.dto.PostResponseDto;
 import com.example.jhenaeumi.entity.Category;
 import com.example.jhenaeumi.entity.Post;
 import com.example.jhenaeumi.entity.User;
@@ -10,9 +10,7 @@ import com.example.jhenaeumi.repository.CategoryRepo;
 import com.example.jhenaeumi.repository.PostRepo;
 import com.example.jhenaeumi.repository.UserRepo;
 import com.example.jhenaeumi.service.PostService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.control.MappingControl;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -62,7 +60,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponseDto getAllPost(Integer pageNumber, Integer pageSize, String sortBy) {
+    public ListPostDto getAllPost(Integer pageNumber, Integer pageSize, String sortBy) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy).descending());
 
         pageOfPost = this.postRepo.findAll(pageable);
@@ -71,7 +69,7 @@ public class PostServiceImpl implements PostService {
 
         List<PostDto> postDto = findAllPost.stream().map((post) -> this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
 
-        PostResponseDto postResponseDto = new PostResponseDto();
+        ListPostDto postResponseDto = new ListPostDto();
 
         postResponseDto.setContent(postDto);
         postResponseDto.setPageNumber(pageOfPost.getNumber());
@@ -102,7 +100,6 @@ public class PostServiceImpl implements PostService {
             Post savedpost = postRepo.save(post);
             return modelMapper.map(savedpost, PostDto.class);
         }else {
-
             throw new AppException("Unauthorize Own User Post", HttpStatus.UNAUTHORIZED);
         }
     }

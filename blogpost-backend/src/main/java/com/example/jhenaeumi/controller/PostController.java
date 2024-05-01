@@ -5,7 +5,7 @@ package com.example.jhenaeumi.controller;
 import com.example.jhenaeumi.annotation.RateLimited;
 import com.example.jhenaeumi.config.ApplicationConstants;
 import com.example.jhenaeumi.dto.PostDto;
-import com.example.jhenaeumi.dto.PostResponseDto;
+import com.example.jhenaeumi.dto.ListPostDto;
 
 import com.example.jhenaeumi.service.PostService;
 
@@ -33,12 +33,12 @@ public class PostController {
 
     }
     @GetMapping("/user/all")
-    public ResponseEntity<PostResponseDto> getAllPost(
+    public ResponseEntity<ListPostDto> getAllPost(
             @RequestParam(value = "pageNumber", defaultValue = ApplicationConstants.PAGE_NUMBER, required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", defaultValue = ApplicationConstants.PAGE_SIZE, required = false) Integer pageSize,
             @RequestParam(value = "sortBy", defaultValue = ApplicationConstants.SORT_BY, required = false) String sortBy){
-        PostResponseDto responeDto = this.postService.getAllPost(pageNumber,pageSize, sortBy);
-        return new ResponseEntity<PostResponseDto>(responeDto, HttpStatus.OK);
+        ListPostDto responeDto = this.postService.getAllPost(pageNumber,pageSize, sortBy);
+        return new ResponseEntity<ListPostDto>(responeDto, HttpStatus.OK);
     }
     @GetMapping("/user/{id}/all")
     public ResponseEntity<List<PostDto>> getPostByUser(@PathVariable("id") Long id){

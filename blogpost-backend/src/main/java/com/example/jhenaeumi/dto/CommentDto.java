@@ -12,6 +12,6 @@ public class CommentDto {
 
     private String commentContent;
 
-    private PostUserDto user;
+    private UserProfileDto user;
 
 }
