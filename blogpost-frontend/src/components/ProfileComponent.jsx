@@ -4,6 +4,7 @@ import { getAuthToken } from "../service/AuthService";
 
 
 const ProfileComponent = () => {
+  
   const token = getAuthToken();
   const [formData, setFormData] = useState({
     firstName: '',
