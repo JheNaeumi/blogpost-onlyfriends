@@ -1,11 +1,13 @@
 import { useState, useEffect, useLayoutEffect } from "react";
 import { updateProfile, getProfile } from "../service/UserDataService";
-import { getAuthToken } from "../service/AuthService";
+import { getAuthToken, setAuthHeader } from "../service/AuthService";
+import { useNavigate } from "react-router-dom";
 
 
 const ProfileComponent = () => {
-  
+  const navigate = useNavigate();
   const token = getAuthToken();
+  const [isAuth, setisAuth] = useState(true);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -19,8 +21,15 @@ const ProfileComponent = () => {
   
   useEffect(() =>{
     getUserProfileData();
+    checkAuthToken();
   },[])
-  
+  const checkAuthToken = () => {
+    const token = getAuthToken();
+    if(token===null){
+      setisAuth(false)
+      navigate('/login')
+    }
+  }
   const getUserProfileData = async() =>  {
     try {
       const response = await getProfile(token)
@@ -29,6 +38,8 @@ const ProfileComponent = () => {
     }
     } catch (error) {
       console.log(error)
+      setAuthHeader(null)
+      navigate('/login')
     }
   }
 
@@ -52,6 +63,9 @@ const ProfileComponent = () => {
     } catch (error) {
       console.error('Registration failed', error);
     }
+  }
+  if(!isAuth){
+    return null;
   }
   return (
     <>
@@ -90,7 +104,7 @@ const ProfileComponent = () => {
             )}
             <div className="flex justify-between">
             <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Update</button>
-            <a href="/" className="text-white bg-red-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Cancel</a>
+            <a onClick={() => navigate('/')} className="text-white bg-red-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Cancel</a>
             </div>
           </form>
         </div>
