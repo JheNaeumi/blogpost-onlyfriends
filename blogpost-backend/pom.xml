@@ -117,35 +117,38 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>com.github.eirslett</groupId>
-				<artifactId>frontend-maven-plugin</artifactId>
-				<version>1.9.1</version>
-				<configuration>
-					<workingDirectory>../blogpost-frontend</workingDirectory>
-					<installDirectory>target</installDirectory>
-				</configuration>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.1.0</version>
 				<executions>
 					<execution>
-						<id>install node and npm</id>
+						<id>install-frontend-dependencies</id>
+						<phase>generate-sources</phase>
 						<goals>
-							<goal>install-node-and-npm</goal>
+							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<nodeVersion>v20.5.1</nodeVersion>
-							<npmVersion>9.8.1</npmVersion>
+							<workingDirectory>../blogpost-frontend</workingDirectory>
+							<executable>npm</executable>
+							<arguments>
+								<argument>install</argument>
+							</arguments>
 						</configuration>
 					</execution>
 					<execution>
-						<id>npm install</id>
+						<id>build-and-include-frontend</id>
+						<phase>generate-sources</phase>
 						<goals>
-							<goal>npm</goal>
+							<goal>exec</goal>
 						</goals>
-					</execution>
-					<execution>
-						<id>webpack build</id>
-						<goals>
-							<goal>webpack</goal>
-						</goals>
+						<configuration>
+							<workingDirectory>../blogpost-frontend</workingDirectory>
+							<executable>npm</executable>
+							<arguments>
+								<argument>run</argument>
+								<argument>build</argument>
+							</arguments>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
