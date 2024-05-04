@@ -1,7 +1,7 @@
 import { useEffect, useState, useLayoutEffect } from "react"
 
 import { getAuthToken,setAuthHeader } from "../service/AuthService"
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { deleteUserContent, getPostResponse, getPostUser, postUserContent, updateUserContent } from "../service/PostService";
 import { deleteComment, postComment, updateComment } from "../service/CommentService";
 import { getListofUser, getProfile } from "../service/UserDataService";
@@ -24,7 +24,7 @@ const BlogpostComponent = () => {
     //Initially get User & Post 
     getUserProfileData();
     getPostContent();
-
+    checkAuthToken();
     // Initial call to set initial state
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -32,6 +32,13 @@ const BlogpostComponent = () => {
       window.removeEventListener('resize', handleResize);
     };
   },[]);
+  const checkAuthToken = () => {
+    const token = getAuthToken();
+    if(token===null){
+      setisAuth(false)
+      navigate('/login')
+    }
+  }
       
   //Checks WindowSizeForSideBar
   const handleResize = () => {
@@ -192,7 +199,7 @@ const BlogpostComponent = () => {
                 )}
               </div>
               <li>
-                <a href="/profile" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <a  onClick={() => navigate("/profile")}className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                   <svg className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                       <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
                   </svg>
@@ -200,7 +207,7 @@ const BlogpostComponent = () => {
                 </a>
               </li>
               <li>
-                <a href="" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"onClick={logOut}>
+                <a className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"onClick={logOut}>
                   <svg className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 16" >
                       <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 8h11m0 0L8 4m4 4-4 4m4-11h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"/>
                   </svg>
@@ -225,7 +232,7 @@ const BlogpostComponent = () => {
                   <div className="flex flex-col items-center justify-center py-2 dark:border-gray-600">
                     <img width="96" height="96" src="https://img.icons8.com/windows/96/user.png" alt="user"/>
                     <span className="text-xl font-semibold flex justify-center">{searchedUser.firstName} {searchedUser.lastName}</span>
-                    <a href="/" className=" float-right">
+                    <a onClick={()=> navigate('/')} className=" float-right">
                       <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
                       <path d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 8.7070312 7.2929688 L 7.2929688 8.7070312 L 10.585938 12 L 7.2929688 15.292969 L 8.7070312 16.707031 L 12 13.414062 L 15.292969 16.707031 L 16.707031 15.292969 L 13.414062 12 L 16.707031 8.7070312 L 15.292969 7.2929688 L 12 10.585938 L 8.7070312 7.2929688 z"></path>
                       </svg>
