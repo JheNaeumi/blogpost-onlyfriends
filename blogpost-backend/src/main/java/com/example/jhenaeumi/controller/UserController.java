@@ -1,5 +1,6 @@
 package com.example.jhenaeumi.controller;
 
+import com.example.jhenaeumi.annotation.RateLimited;
 import com.example.jhenaeumi.dto.UserProfileDto;
 import com.example.jhenaeumi.dto.SignUpDto;
 import com.example.jhenaeumi.dto.UserDto;
@@ -17,7 +18,7 @@ import java.util.List;
 @RequestMapping("/api/user")
 public class UserController {
     private final UserServiceImpl userService;
-
+    @RateLimited(name = "updateProfile", token = "{token}", value = 1, minutes = 6000)
     @PutMapping("/profile/update")
     public ResponseEntity<UserDto> updateProfile(@RequestHeader("Authorization") String token, @RequestBody @Valid SignUpDto user){
         UserDto updatedUser = userService.updateUserProfile(token, user);

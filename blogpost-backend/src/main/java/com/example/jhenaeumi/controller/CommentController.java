@@ -1,5 +1,6 @@
 package com.example.jhenaeumi.controller;
 
+import com.example.jhenaeumi.annotation.RateLimited;
 import com.example.jhenaeumi.dto.CommentDto;
 import com.example.jhenaeumi.service.CommentService;
 import jakarta.validation.Valid;
@@ -15,12 +16,13 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
+    @RateLimited(name = "createComment", token = "{token}", value = 2)
     @PostMapping("/create/{postId}")
     public ResponseEntity<CommentDto> createComment(@RequestHeader("Authorization") String token,@RequestBody @Valid CommentDto commentDto, @PathVariable("postId") Long postId){
         CommentDto createdComment = commentService.createComment(token, commentDto, postId);
         return new ResponseEntity<CommentDto>(createdComment, HttpStatus.CREATED);
     }
-
+    @RateLimited(name = "updateComment", token = "{token}", value = 2)
     @PatchMapping("/update/{commentId}")
     public ResponseEntity<CommentDto> updateComment(@RequestHeader("Authorization") String token,@RequestBody @Valid CommentDto commentDto,@PathVariable("commentId")  Long commentId){
         CommentDto updateComment = commentService.updateComment(token, commentDto, commentId);
