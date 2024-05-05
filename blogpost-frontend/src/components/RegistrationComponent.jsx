@@ -2,6 +2,7 @@ import { postRegistration } from "../service/AuthenticationService";
 import { useState,useEffect } from "react";
 import { getAuthToken, setAuthHeader } from "../service/AuthService";
 import { useNavigate} from "react-router-dom";
+import logo from "../assets/logo.png"
 
 const RegistrationComponent = () => {
   const navigate = useNavigate();
@@ -62,7 +63,7 @@ const RegistrationComponent = () => {
             <img className="w-5 h-5 dark:hover:bg-transparent"src="https://img.icons8.com/metro/26/back.png" alt="back"/>
           </a>
           <div className="mx-auto">
-            <img className="mx-auto h-10" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company" />
+            <img className="mx-auto h-28 w-auto" src={logo} alt="Your Company" /> 
             <h2 className=" mt-2 text-2xl font-bold leading-9 tracking-tight text-gray-900"> Sign Up </h2>
           </div>
         </div>
