@@ -8,6 +8,7 @@ const ProfileComponent = () => {
   const navigate = useNavigate();
   const token = getAuthToken();
   const [isAuth, setisAuth] = useState(true);
+  const [showNotification, setShowNotification] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -54,6 +55,12 @@ const ProfileComponent = () => {
           const response = await updateProfile(token, formData)
           if (response.status === 200) {
             console.log('Update Succesful',response.data);
+            setShowNotification(true);
+            setTimeout(() => {
+              setShowNotification(false);
+              navigate("/")
+            }, 2000); //
+         
           }else {
             console.error('Update failed', response.statusText);
             setFormData('')
@@ -106,8 +113,15 @@ const ProfileComponent = () => {
             <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Update</button>
             <a onClick={() => navigate('/')} className="text-white bg-red-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Cancel</a>
             </div>
+             {/* Popup notification component */}
+         
           </form>
         </div>
+        {showNotification && (
+                <div className="fixed bottom-5 right-5 bg-green-500 text-white px-4 py-2 rounded">
+                    Submit successful!
+                </div>
+            )}
       </div>
     </>
   )
