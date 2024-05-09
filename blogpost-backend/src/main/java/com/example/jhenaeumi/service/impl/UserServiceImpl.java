@@ -42,11 +42,9 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final UserMapper userMapper;
+   // private final UserMapper userMapper;  (Mapstruct)
 
-
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper; //ModelMapper
 
     @PostConstruct
     protected void init() {
@@ -59,7 +57,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
 
         if (passwordEncoder.matches(CharBuffer.wrap(loginDto.getPassword()), user.getPassword())) {
-            return userMapper.toUserDto(user);
+            return modelMapper.map(user, UserDto.class);//userMapper.toUserDto(user);
         }
         throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
     }
@@ -72,19 +70,19 @@ public class UserServiceImpl implements UserService {
             throw new AppException("Login already exists", HttpStatus.BAD_REQUEST);
         }
 
-        User user = userMapper.signUpToUser(userDto);
+        User user = modelMapper.map(userDto, User.class);//userMapper.signUpToUser(userDto);
         user.setRole(Role.USER);
         user.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())));
 
         User savedUser = userRepository.save(user);
 
-        return userMapper.toUserDto(savedUser);
+        return modelMapper.map(savedUser, UserDto.class);//userMapper.toUserDto(savedUser);
     }
     @Override
     public UserDto findByLogin(String login) {
         User user = userRepository.findByLogin(login)
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
-        return userMapper.toUserDto(user);
+        return modelMapper.map(user, UserDto.class);//userMapper.toUserDto(user);
     }
 
     @Override
@@ -101,7 +99,7 @@ public class UserServiceImpl implements UserService {
         user.setRole(Role.USER);
         user.setPassword(passwordEncoder.encode(CharBuffer.wrap(signUpDto.getPassword())));
         User savedUser = userRepository.save(user);
-        return userMapper.toUserDto(savedUser);
+        return modelMapper.map(savedUser, UserDto.class);//userMapper.toUserDto(savedUser);
     }
 
     @Override
@@ -110,7 +108,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByLogin(login)
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
 
-        return modelMapper.map(user, UserProfileDto.class);
+        return modelMapper.map(user, UserProfileDto.class);//userMapper.toUserProfileDto(user);modelMapper.map(user, UserProfileDto.class);
     }
 
     @Override
@@ -130,7 +128,7 @@ public class UserServiceImpl implements UserService {
     public List<UserProfileDto> listAllUser(String name) {
         Pageable pageable = PageRequest.of(0,3);
         List<User> user = userRepository.findByFirstNameOrLastName(name, pageable);
-        List<UserProfileDto> userDto = user.stream().map((user1)->modelMapper.map(user1, UserProfileDto.class )).collect(Collectors.toList());
+        List<UserProfileDto> userDto = user.stream().map((user1)-> modelMapper.map(user1, UserProfileDto.class)).collect(Collectors.toList()); //modelMapper.map(user1, UserProfileDto.class )
         return userDto;
     }
 

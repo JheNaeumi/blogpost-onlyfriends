@@ -37,7 +37,7 @@ public class RateLimitAspect {
             synchronized (this) {
                 if (!userBuckets.containsKey(key)) {
                     // Define rate limit parameters
-                    Bandwidth limit = Bandwidth.classic(10, Refill.intervally(rateLimited.value(), Duration.ofMinutes(rateLimited.minutes())));
+                    Bandwidth limit = Bandwidth.classic(rateLimited.value(), Refill.intervally(rateLimited.value(), Duration.ofMinutes(rateLimited.minutes())));
 
                     // Create a Bucket using Bucket4j
                     Bucket bucket = Bucket4j.builder().addLimit(limit).build();
@@ -53,16 +53,14 @@ public class RateLimitAspect {
             // If token is available, proceed with the method execution
             return joinPoint.proceed();
         } else {
-            // If rate limit exceeded, you can throw an exception or handle it as needed
+            // If rate limit exceeded, throw an exception or handle it as needed
             throw new AppException("Rate limit exceeded", HttpStatus.TOO_MANY_REQUESTS);
         }
     }
 
     private String getUserId(String token) {
         String logintoken = userService.validateToken(token);
-        // You need to implement this method to extract the user ID from the token
-        // Example: String userId = someTokenParser.extractUserId(token);
-        return logintoken; // Dummy implementation, replace with actual logic to get user ID
+        return logintoken; 
     }
 }
 

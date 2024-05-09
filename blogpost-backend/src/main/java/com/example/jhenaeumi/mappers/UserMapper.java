@@ -3,6 +3,7 @@ package com.example.jhenaeumi.mappers;
 
 import com.example.jhenaeumi.dto.SignUpDto;
 import com.example.jhenaeumi.dto.UserDto;
+import com.example.jhenaeumi.dto.UserProfileDto;
 import com.example.jhenaeumi.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -11,6 +12,7 @@ import org.mapstruct.Mapping;
 public interface UserMapper {
     UserDto toUserDto(User user);
 
+    UserProfileDto toUserProfileDto(User user);
     @Mapping(target = "password", ignore = true)
     User signUpToUser(SignUpDto signUpDto);
 }
