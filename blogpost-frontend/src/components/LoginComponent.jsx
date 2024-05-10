@@ -10,7 +10,9 @@ const LoginComponent = () => {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [isAuth, setisAuth] = useState(false);
-  
+  const [showNotification, setShowNotification] = useState(false);
+  const [notifMessage, setnotifMessage] = useState('')
+  //Handle Auth Service
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -23,12 +25,26 @@ const LoginComponent = () => {
         navigate("/")
       }else {
         setAuthHeader(null);
-        console.error('Login failed', response.statusText);
+       // console.error('Login failed', response.statusText);
+        setShowNotification(true)
+        setnotifMessage('Login Failed, Unauthorized')
+        setTimeout(() => {
+          setShowNotification(false);
+          setnotifMessage('')
+        }, 2000);
         setLogin('')
         setPassword('')
       }
     }catch (error) {
-      console.error('Login failed', error);
+      //console.error('Login failed', error);
+      setShowNotification(true)
+      setnotifMessage('Login Failed, Unauthorized')
+      setTimeout(() => {
+        setShowNotification(false);
+        setnotifMessage('')
+      }, 2000);
+      setLogin('')
+      setPassword('')
     }
   }
   //If token is present, prevent from going back to login page
@@ -79,6 +95,11 @@ const LoginComponent = () => {
             <a href="/registration" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"> Sign up </a>
           </p>
         </div>
+        {showNotification && (
+        <div className="fixed bottom-5 right-5 bg-green-500 text-white px-4 py-2 rounded">
+            {notifMessage}
+        </div>
+        )}
       </div>
     </>
   )

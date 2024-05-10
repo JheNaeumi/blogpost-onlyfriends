@@ -9,6 +9,7 @@ const ProfileComponent = () => {
   const token = getAuthToken();
   const [isAuth, setisAuth] = useState(true);
   const [showNotification, setShowNotification] = useState(false);
+  const [notifMessage, setnotifMessage] = useState('')
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -56,6 +57,7 @@ const ProfileComponent = () => {
           if (response.status === 200) {
             console.log('Update Succesful',response.data);
             setShowNotification(true);
+            setnotifMessage("Update Successful")
             setTimeout(() => {
               setShowNotification(false);
               navigate("/")
@@ -63,12 +65,22 @@ const ProfileComponent = () => {
          
           }else {
             console.error('Update failed', response.statusText);
-            setFormData('')
-            setFormData_1('')
+            setShowNotification(true);
+            setnotifMessage("Update Failed")
+            setTimeout(() => {
+              setShowNotification(false);
+              navigate("/")
+            }, 2000);
           }
         }
     } catch (error) {
       console.error('Registration failed', error);
+      setShowNotification(true);
+      setnotifMessage("Update Failed")
+      setTimeout(() => {
+        setShowNotification(false);
+        navigate("/")
+      }, 2000);
     }
   }
   if(!isAuth){
@@ -119,7 +131,7 @@ const ProfileComponent = () => {
         </div>
         {showNotification && (
                 <div className="fixed bottom-5 right-5 bg-green-500 text-white px-4 py-2 rounded">
-                    Submit successful!
+                    {notifMessage}
                 </div>
             )}
       </div>
