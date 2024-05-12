@@ -21,4 +21,6 @@ public interface UserService {
     String validateToken(String logintoken);
 
     List<UserProfileDto> listAllUser(String name);
+
+    void verify(String email, String otp);
 }
