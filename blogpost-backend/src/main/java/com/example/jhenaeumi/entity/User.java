@@ -45,4 +45,10 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Post> posts = new ArrayList<>();
+
+    //Email Verification
+    private boolean verified;
+
+    private String otp;
+
 }
