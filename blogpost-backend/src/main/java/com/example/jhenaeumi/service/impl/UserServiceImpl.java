@@ -29,6 +29,7 @@ import java.nio.CharBuffer;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 
@@ -42,20 +43,27 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-   // private final UserMapper userMapper;  (Mapstruct)
+    // private final UserMapper userMapper;  (Mapstruct)
 
     private final ModelMapper modelMapper; //ModelMapper
+
+    private final EmailService emailService;
 
     @PostConstruct
     protected void init() {
         // this is to avoid having the raw secret key available in the JVM
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
+
     @Override
     public UserDto login(LoginDto loginDto) {
         User user = userRepository.findByLogin(loginDto.getLogin())
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
-
+        //check if enabled
+        if(!user.isVerified()){
+            throw new AppException("Account not Verfiied", HttpStatus.UNAUTHORIZED);
+        }
+        //check password
         if (passwordEncoder.matches(CharBuffer.wrap(loginDto.getPassword()), user.getPassword())) {
             return modelMapper.map(user, UserDto.class);//userMapper.toUserDto(user);
         }
@@ -67,17 +75,21 @@ public class UserServiceImpl implements UserService {
         Optional<User> optionalUser = userRepository.findByLogin(userDto.getLogin());
 
         if (optionalUser.isPresent()) {
-            throw new AppException("Login already exists", HttpStatus.BAD_REQUEST);
+            throw new AppException("User already exists", HttpStatus.BAD_REQUEST);
         }
 
         User user = modelMapper.map(userDto, User.class);//userMapper.signUpToUser(userDto);
         user.setRole(Role.USER);
         user.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())));
 
-        User savedUser = userRepository.save(user);
+        String otp = generateOTP();
+        user.setOtp(otp);
 
+        User savedUser = userRepository.save(user);
+        sendVerificationEmail(savedUser.getLogin(), otp);
         return modelMapper.map(savedUser, UserDto.class);//userMapper.toUserDto(savedUser);
     }
+
     @Override
     public UserDto findByLogin(String login) {
         User user = userRepository.findByLogin(login)
@@ -88,7 +100,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUserProfile(String logintoken, SignUpDto signUpDto) {
         String login = validateToken(logintoken);
-        if(!login.equals(signUpDto.getLogin())){
+        if (!login.equals(signUpDto.getLogin())) {
             throw new AppException("Unauthorized", HttpStatus.UNAUTHORIZED);
         }
 
@@ -126,10 +138,40 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserProfileDto> listAllUser(String name) {
-        Pageable pageable = PageRequest.of(0,3);
+        Pageable pageable = PageRequest.of(0, 3);
         List<User> user = userRepository.findByFirstNameOrLastName(name, pageable);
-        List<UserProfileDto> userDto = user.stream().map((user1)-> modelMapper.map(user1, UserProfileDto.class)).collect(Collectors.toList()); //modelMapper.map(user1, UserProfileDto.class )
+        List<UserProfileDto> userDto = user.stream().map((user1) -> modelMapper.map(user1, UserProfileDto.class)).collect(Collectors.toList()); //modelMapper.map(user1, UserProfileDto.class )
         return userDto;
     }
 
+    @Override
+    public void verify(String email, String otp) {
+        User users = userRepository.findByLogin(email).orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
+        if (users.isVerified()) {
+            throw new RuntimeException("User is already verified");
+        } else if (otp.equals(users.getOtp())) {
+            users.setVerified(true);
+            userRepository.save(users);
+        }else {
+            throw new RuntimeException("Internal Server error");
+        }
+    }
+
+    private String generateOTP(){
+        Random random = new Random();
+        int otpValue = 100000 + random.nextInt(900000);
+        return String.valueOf(otpValue);
+    }
+
+    private void sendVerificationEmail(String email,String otp){
+        String subject = "Email verification";
+        //String body ="your verification otp is: "+otp;
+        String verificationLink = "http://localhost:8080/api/verify?email=" + email + "&otp=" + otp;
+        String body = "Click <a href=\"" + verificationLink + "\">here</a> to verify your email.";
+        emailService.sendEmail(email,subject,body);
+    }
+
 }
+
+
+
