@@ -38,7 +38,8 @@ public class WebSecurityConfig {
                 HttpMethod.PATCH.name(),
                 HttpMethod.PUT.name(),
                 HttpMethod.DELETE.name(),
-                HttpMethod.OPTIONS.name()));
+                HttpMethod.OPTIONS.name()
+        ));
         configuration.setAllowedHeaders(Arrays.asList(
                 HttpHeaders.AUTHORIZATION,
                 HttpHeaders.CONTENT_TYPE
@@ -51,7 +52,7 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                //.cors(c -> c.configurationSource(corsConfigurationSource()))
+                .cors(c -> c.configurationSource(corsConfigurationSource()))
                 .exceptionHandling(customizer -> customizer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .addFilterBefore(new JwtAuthFilter(userAuthenticationProvider), BasicAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
@@ -61,6 +62,7 @@ public class WebSecurityConfig {
                             .requestMatchers("/assets/*").permitAll()
                             .requestMatchers("/api/login").permitAll()
                             .requestMatchers( "/api/register").permitAll()
+                            .requestMatchers( "/api/verify").permitAll()
                             .anyRequest().authenticated());
 
 
