@@ -146,10 +146,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void verify(String email, String otp) {
-        User users = userRepository.findByLogin(email).orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
+        User users = userRepository.findByLogin(email).orElseThrow(() -> new RuntimeException("Unknown user"));
         if (users.isVerified()) {
-            throw new RuntimeException("User is already verified");
-        } else if (otp.equals(users.getOtp())) {
+             throw new RuntimeException("User is already verified");
+         } else if (otp.equals(users.getOtp())) {
             users.setVerified(true);
             userRepository.save(users);
         }else {
@@ -166,7 +166,7 @@ public class UserServiceImpl implements UserService {
     private void sendVerificationEmail(String email,String otp){
         String subject = "Email verification";
         //String body ="your verification otp is: "+otp;
-        String verificationLink = "http://localhost:8080/api/verify?email=" + email + "&otp=" + otp;
+        String verificationLink = "http://localhost:5173/verify?email=" + email + "&otp=" + otp; //localhost
         String body = "Click <a href=\"" + verificationLink + "\">here</a> to verify your email.";
         emailService.sendEmail(email,subject,body);
     }
