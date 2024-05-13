@@ -21,13 +21,14 @@ const LoginComponent = () => {
       if (response.status === 200) {
         const data = await response;
         setAuthHeader(response.data.token);
-        // console.log('Login successful', data);
+         console.log('Login successful', data);
         navigate("/")
       }else {
+        const errorMessage = await response.text();
         setAuthHeader(null);
        // console.error('Login failed', response.statusText);
         setShowNotification(true)
-        setnotifMessage('Login Failed, Unauthorized')
+        setnotifMessage('Login Failed, Unauthorized', errorMessage)
         setTimeout(() => {
           setShowNotification(false);
           setnotifMessage('')
