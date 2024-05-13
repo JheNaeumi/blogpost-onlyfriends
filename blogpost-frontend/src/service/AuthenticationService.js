@@ -11,3 +11,7 @@ export const postLogin = (userLogin) => {
     return axios.post(REST_API_BASE_URL + "/login", userLogin)
 }
 
+export const verify = (email, otp) => {
+    return axios.post(REST_API_BASE_URL + `/verify?email=${email}&otp=${otp}`)
+    
+}
