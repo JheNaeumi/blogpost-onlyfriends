@@ -11,6 +11,7 @@ import com.example.jhenaeumi.repository.PostRepo;
 import com.example.jhenaeumi.repository.UserRepo;
 import com.example.jhenaeumi.service.PostService;
 import lombok.RequiredArgsConstructor;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+
 import java.util.stream.Collectors;
 
 
@@ -46,13 +48,24 @@ public class PostServiceImpl implements PostService {
     public PostDto createPost(String token, PostDto postDto, Long categoryId) {
         String logintoken = userService.validateToken(token);
         User user = userRepo.findByLogin(logintoken).orElseThrow(()-> new AppException("Unknown User", HttpStatus.NOT_FOUND));
-        Category category = categoryRepo.findById(categoryId).orElseThrow(null);
 
         Post post = this.modelMapper.map(postDto, Post.class);
 
         post.setPostCreatedDate(new Date());
         post.setUser(user);
-        post.setCategory(category);
+
+        Category category = categoryRepo.getAllCategory();
+        //check if there is an existing category
+        if(category==null){
+            category = new Category();
+            category.setId(1L);
+            category.setCategoryTitle("Latest");
+            category.setCategoryDescription("List all latest post");
+            categoryRepo.save(category);
+        }
+        //otherwise set the current category
+        Category category1 = categoryRepo.findById(categoryId).orElseThrow(null);
+        post.setCategory(category1);
 
         Post savedPost = this.postRepo.save(post);
 
