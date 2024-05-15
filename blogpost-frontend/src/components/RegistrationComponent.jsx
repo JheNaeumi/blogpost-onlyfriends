@@ -63,7 +63,7 @@ const RegistrationComponent = () => {
       }
     } catch (error) {
       // Handle registration error (e.g., show an error message)
-      console.error('Registration failed', error);
+      console.error('Error Registration');
       setShowNotification(true)
       setnotifMessage('Registration Failed, Try again later')
       setTimeout(() => {

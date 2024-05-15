@@ -27,13 +27,13 @@ function VerificationComponent () {
   const verifyEmail = async () => {
       try {
         const response = await verify(email, otp);
-        console.log(response.data);
+        //console.log(response.data);
         if (response.status === 200) {
           setVerificationStatus('Email successfully verified!');
           startRedirectTimer()
         }
       } catch (error) {
-        console.error('Error verifying email:', error);
+        console.error('Error verifying email:');
         const message = error.response.data;
         setVerificationStatus(message);
         startRedirectTimer();

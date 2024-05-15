@@ -55,7 +55,7 @@ const ProfileComponent = () => {
       else{
           const response = await updateProfile(token, formData)
           if (response.status === 200) {
-            console.log('Update Succesful',response.data);
+            //console.log('Update Succesful',response.data);
             setShowNotification(true);
             setnotifMessage("Update Successful")
             setTimeout(() => {
@@ -64,7 +64,7 @@ const ProfileComponent = () => {
             }, 2000); //
          
           }else {
-            console.error('Update failed', response.statusText);
+            console.error('Update failed');
             setShowNotification(true);
             setnotifMessage("Update Failed")
             setTimeout(() => {
@@ -74,7 +74,7 @@ const ProfileComponent = () => {
           }
         }
     } catch (error) {
-      console.error('Registration failed', error);
+      console.error('Error Submit');
       setShowNotification(true);
       setnotifMessage("Update Failed")
       setTimeout(() => {
