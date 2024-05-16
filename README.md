@@ -1,7 +1,7 @@
 # blogpost-onlyfriends
 
 ## About
-Onlyfriends is a simple blogpost website where you can post your daily thoguhts and discuss among friends much like reddit. It is built using Springboot for the backend, Vite for frontend and MySQL as the database.
+Onlyfriends is a simple blogpost website where you can post your daily thoguhts and discuss among friends much like reddit. It is built using Springboot for the backend, Vite for frontend and MySQL as the database. The application is deployed using aws, utilizing EC2 Instance & RDS(Database). You can check it out with the following link http://blogpost-env.eba-5fmj7xqs.ap-southeast-2.elasticbeanstalk.com/. 
 
 ## Dependencies
 ```
