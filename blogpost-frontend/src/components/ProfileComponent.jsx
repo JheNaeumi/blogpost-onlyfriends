@@ -39,7 +39,7 @@ const ProfileComponent = () => {
         setFormData(response.data)
     }
     } catch (error) {
-      console.log(error)
+      console.log("Error Getting User Profile Data")
       setAuthHeader(null)
       navigate('/login')
     }

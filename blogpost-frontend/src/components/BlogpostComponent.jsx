@@ -334,7 +334,7 @@ function Post({ post, getPostContent, formData }) {
     setIsEditing(false);
     getPostContent();
     }catch(error){
-      console.log(error)
+      console.log('Error Updating Post')
     }
   };
   //Delete User's own post
@@ -347,7 +347,7 @@ function Post({ post, getPostContent, formData }) {
       setShowOptions(false);
        getPostContent();
     } catch (error) {
-      console.log(error)
+      console.log('Error Deleting Post')
     }
   }
   //Update User's own comment
@@ -366,7 +366,7 @@ function Post({ post, getPostContent, formData }) {
       setEditingCommentId(null);
       setEditedCommentContent('')
     } catch (error) {
-      console.log(error)
+      console.log('Error Updating Comment')
     }
   };
   //Delete User's own comment
@@ -376,7 +376,7 @@ function Post({ post, getPostContent, formData }) {
       await deleteComment(token ,commentId)
       setmappedComments(mappedComments.filter(comment => comment.id !== commentId));
     } catch (error) {
-      console.log(error)
+      console.log('Error Deleting Comment')
     }
   };
   //Create a comment on a specific post
@@ -385,11 +385,11 @@ function Post({ post, getPostContent, formData }) {
     try {
       const token = getAuthToken()
       const response = await postComment(token, userComment, post.id)
-      console.log("Comment Succes", response.status)
+      console.log("Comment Success")
       setCommentText('');
       setmappedComments([...mappedComments, response.data]);
     } catch (error) {
-      console.log(error)
+      console.log('Error Adding Comment')
       setCommentText('')
     }
   };
