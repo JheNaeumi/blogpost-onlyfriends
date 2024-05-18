@@ -22,7 +22,6 @@ const ProfileComponent = () => {
   const [passwordError, setPasswordError] = useState('');
   
   useEffect(() =>{
-    getUserProfileData();
     checkAuthToken();
   },[])
   const checkAuthToken = () => {
@@ -30,6 +29,9 @@ const ProfileComponent = () => {
     if(token===null){
       setisAuth(false)
       navigate('/login')
+    }
+    else{
+      getUserProfileData();
     }
   }
   const getUserProfileData = async() =>  {
