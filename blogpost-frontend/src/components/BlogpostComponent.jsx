@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { deleteUserContent, getPostResponse, getPostUser, postUserContent, updateUserContent } from "../service/PostService";
 import { deleteComment, postComment, updateComment } from "../service/CommentService";
 import { getListofUser, getProfile } from "../service/UserDataService";
+
 const BlogpostComponent = () => {
  
   const navigate = useNavigate();
@@ -21,9 +22,7 @@ const BlogpostComponent = () => {
   },[]) 
 
   useEffect(() => { 
-    //Initially get User & Post 
-    getUserProfileData();
-    getPostContent();
+    // Check if token is present
     checkAuthToken();
     // Initial call to set initial state
     handleResize();
@@ -32,11 +31,16 @@ const BlogpostComponent = () => {
       window.removeEventListener('resize', handleResize);
     };
   },[]);
+
   const checkAuthToken = () => {
     const token = getAuthToken();
     if(token===null){
       setisAuth(false)
       navigate('/login')
+    }else{
+      //Initially get User & Post 
+      getUserProfileData();
+      getPostContent();
     }
   }
       
@@ -73,6 +77,8 @@ const BlogpostComponent = () => {
     }
     } catch (error) {
       console.log('Error getting user Profile')
+      setAuthHeader(null)
+      navigate('/login')
     }
   }
   //Get List of Post
@@ -88,8 +94,7 @@ const BlogpostComponent = () => {
       //console.log("success")
     } catch (error) {
       console.error('Error fetching data:');
-      setAuthHeader(null)
-      navigate('/login')
+      
     }
   };
   //Create New Post
@@ -232,7 +237,7 @@ const BlogpostComponent = () => {
                   <div className="flex flex-col items-center justify-center py-2 dark:border-gray-600">
                     <img width="96" height="96" src="https://img.icons8.com/windows/96/user.png" alt="user"/>
                     <span className="text-xl font-semibold flex justify-center">{searchedUser.firstName} {searchedUser.lastName}</span>
-                    <a href="/" className=" float-right">
+                    <a onClick={()=> {setSearchingUser(false),  getPostContent()}} className=" float-right">
                       <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
                       <path d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 8.7070312 7.2929688 L 7.2929688 8.7070312 L 10.585938 12 L 7.2929688 15.292969 L 8.7070312 16.707031 L 12 13.414062 L 15.292969 16.707031 L 16.707031 15.292969 L 13.414062 12 L 16.707031 8.7070312 L 15.292969 7.2929688 L 12 10.585938 L 8.7070312 7.2929688 z"></path>
                       </svg>
