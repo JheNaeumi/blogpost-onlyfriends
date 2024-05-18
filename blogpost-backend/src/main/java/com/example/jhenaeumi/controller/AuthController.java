@@ -25,14 +25,14 @@ public class AuthController {
     }
 
     @PostMapping("/api/register")
-    public ResponseEntity<UserDto> register(@RequestBody @Valid SignUpDto user) {
+    public ResponseEntity<?> register(@RequestBody @Valid SignUpDto user) {
         UserDto createdUser = userService.register(user);
         createdUser.setToken(userAuthenticationProvider.createToken(createdUser));
-        return ResponseEntity.ok(createdUser);
+        return ResponseEntity.ok("User Registered");
     }
 
     @PostMapping("/api/verify")
-    public ResponseEntity<?> verifyUser(@RequestParam(name = "email", required = true) String email, @RequestParam(name = "otp", required = false) String otp){
+    public ResponseEntity<?> verifyUser(@RequestParam(name = "email", required = true) String email, @RequestParam(name = "otp", required = true) String otp){
         try{
             userService.verify(email, otp);
             return new ResponseEntity<>("User verified successfully", HttpStatus.OK);
