@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { deleteUserContent, getPostResponse, getPostUser, postUserContent, updateUserContent } from "../service/PostService";
 import { deleteComment, postComment, updateComment } from "../service/CommentService";
 import { getListofUser, getProfile } from "../service/UserDataService";
+import { validToken } from "../service/AuthenticationService";
 
 const BlogpostComponent = () => {
  
@@ -22,8 +23,8 @@ const BlogpostComponent = () => {
   },[]) 
 
   useEffect(() => { 
-    // Check if token is present
-    checkAuthToken();
+    
+    checkAuthToken()
     // Initial call to set initial state
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -32,15 +33,27 @@ const BlogpostComponent = () => {
     };
   },[]);
 
-  const checkAuthToken = () => {
+
+  const checkAuthToken = async () => {
     const token = getAuthToken();
-    if(token===null){
-      setisAuth(false)
-      navigate('/login')
+    if(token!==null){
+      try {
+          const response =  await validToken(token);
+          if(response.status===200){
+            //Initially get User & Post
+            setisAuth(true) 
+            getUserProfileData();
+            getPostContent();
+          }
+      } catch (error) {
+        console.log(error.response.data)
+        setAuthHeader(null)
+        setisAuth(false)
+        navigate('/login')
+      }
     }else{
-      //Initially get User & Post 
-      getUserProfileData();
-      getPostContent();
+      setAuthHeader(null)
+      navigate('/login')
     }
   }
       
@@ -74,11 +87,12 @@ const BlogpostComponent = () => {
       const response = await getProfile(token)
       if(response.status === 200){
         setFormData(response.data)
-    }
+       // console.log(response.headers.get('Authorization'))
+    } 
     } catch (error) {
       console.log('Error getting user Profile')
-      setAuthHeader(null)
-      navigate('/login')
+      //setAuthHeader(null) 
+      //navigate('/login')
     }
   }
   //Get List of Post
@@ -86,7 +100,7 @@ const BlogpostComponent = () => {
     try {
       const token = getAuthToken()
       const response = await getPostResponse(token, page)
-      setisAuth(true)
+
       mapContent(response.data.content)
       //console.log(response.data.content)
       setTotalPages(response.data.totalPages-1)
