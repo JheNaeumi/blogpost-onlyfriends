@@ -2,12 +2,13 @@ import { useState, useEffect, useLayoutEffect } from "react";
 import { updateProfile, getProfile } from "../service/UserDataService";
 import { getAuthToken, setAuthHeader } from "../service/AuthService";
 import { useNavigate } from "react-router-dom";
+import { validToken } from "../service/AuthenticationService";
 
 
 const ProfileComponent = () => {
   const navigate = useNavigate();
   const token = getAuthToken();
-  const [isAuth, setisAuth] = useState(true);
+  const [isAuth, setisAuth] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const [notifMessage, setnotifMessage] = useState('')
   const [formData, setFormData] = useState({
@@ -24,14 +25,25 @@ const ProfileComponent = () => {
   useEffect(() =>{
     checkAuthToken();
   },[])
-  const checkAuthToken = () => {
+  const checkAuthToken = async () => {
     const token = getAuthToken();
-    if(token===null){
-      setisAuth(false)
+    if(token!==null){
+      try {
+          const response =  await validToken(token);
+          if(response.status===200){
+            //Initially get User & Post
+            setisAuth(true) 
+            getUserProfileData();
+          }
+      } catch (error) {
+        console.log(error.response.data)
+        setAuthHeader(null)
+        setisAuth(false)
+        navigate('/login')
+      }
+    }else{
+      setAuthHeader(null)
       navigate('/login')
-    }
-    else{
-      getUserProfileData();
     }
   }
   const getUserProfileData = async() =>  {
