@@ -27,11 +27,10 @@ public class AuthController {
     @PostMapping("/api/register")
     public ResponseEntity<?> register(@RequestBody @Valid SignUpDto user) {
         UserDto createdUser = userService.register(user);
-        createdUser.setToken(userAuthenticationProvider.createToken(createdUser));
         return ResponseEntity.ok("User Registered");
     }
 
-    @PostMapping("/api/verify")
+    @GetMapping("/api/verify")
     public ResponseEntity<?> verifyUser(@RequestParam(name = "email", required = true) String email, @RequestParam(name = "otp", required = true) String otp){
         try{
             userService.verify(email, otp);
@@ -41,4 +40,13 @@ public class AuthController {
         }
     }
 
+    @GetMapping("/api/token")
+    public ResponseEntity<?> checkToken(@RequestHeader("Authorization") String token){
+        try{
+            userService.validateToken(token);
+            return new ResponseEntity<>("Token is Valid", HttpStatus.OK);
+        }catch (RuntimeException e){
+            return new ResponseEntity<>("Token is Invalid", HttpStatus.UNAUTHORIZED);
+        }
+    }
 }
