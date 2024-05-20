@@ -52,19 +52,21 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(c -> c.configurationSource(corsConfigurationSource()))
+                 .cors(c -> c.configurationSource(corsConfigurationSource()))
                 .exceptionHandling(customizer -> customizer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .addFilterBefore(new JwtAuthFilter(userAuthenticationProvider), BasicAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests((requests) -> requests
-                            .requestMatchers("/*").permitAll()
+                            .requestMatchers("/login").permitAll()
+                            .requestMatchers("/registration").permitAll()
                             .requestMatchers("/assets/*").permitAll()
+                            .requestMatchers("/android-chrome-192x192.png").permitAll()
                             .requestMatchers("/api/login").permitAll()
                             .requestMatchers( "/api/register").permitAll()
                             .requestMatchers( "/api/verify").permitAll()
+                            .requestMatchers( "/api/token").permitAll()
                             .anyRequest().authenticated());
-
 
         return http.build();
     }
