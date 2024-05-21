@@ -50,6 +50,7 @@ const ProfileComponent = () => {
     try {
       const response = await getProfile(token)
       if(response.status === 200){
+        setisAuth(true)
         setFormData(response.data)
     }
     } catch (error) {
