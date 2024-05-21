@@ -23,7 +23,7 @@ const BlogpostComponent = () => {
   },[]) 
 
   useEffect(() => { 
-    
+    //verifyToken if Present and Valid
     checkAuthToken()
     // Initial call to set initial state
     handleResize();
@@ -40,13 +40,13 @@ const BlogpostComponent = () => {
       try {
           const response =  await validToken(token);
           if(response.status===200){
-            //Initially get User & Post
             setisAuth(true) 
+             //Initially get User & Post
             getUserProfileData();
             getPostContent();
           }
       } catch (error) {
-        console.log(error.response.data)
+        //console.log("Token Invalid")
         setAuthHeader(null)
         setisAuth(false)
         navigate('/login')
