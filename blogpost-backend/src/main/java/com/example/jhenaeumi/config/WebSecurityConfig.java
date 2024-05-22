@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -52,21 +53,21 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                 .cors(c -> c.configurationSource(corsConfigurationSource()))
-                .exceptionHandling(customizer -> customizer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                //.cors(c -> c.configurationSource(corsConfigurationSource()))
+                .exceptionHandling(customizer -> customizer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))) //
                 .addFilterBefore(new JwtAuthFilter(userAuthenticationProvider), BasicAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((requests) -> requests
-                            .requestMatchers("/login").permitAll()
-                            .requestMatchers("/registration").permitAll()
+                            .requestMatchers("/*").permitAll()
                             .requestMatchers("/assets/*").permitAll()
-                            .requestMatchers("/android-chrome-192x192.png").permitAll()
-                            .requestMatchers("/api/login").permitAll()
-                            .requestMatchers( "/api/register").permitAll()
-                            .requestMatchers( "/api/verify").permitAll()
-                            .requestMatchers( "/api/token").permitAll()
+                            .requestMatchers("/api/*").permitAll()
                             .anyRequest().authenticated());
+                            //.requestMatchers( "/api/register").permitAll()
+                            //.requestMatchers( "/api/verify").permitAll()
+                            //.requestMatchers( "/api/token").permitAll()
+                            //.requestMatchers("/registration").permitAll()
+                            //.requestMatchers("/login").permitAll()
 
         return http.build();
     }
