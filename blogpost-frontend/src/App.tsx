@@ -24,9 +24,10 @@ function App() {
           <Route path='/login' element={<LoginComponent/> }></Route>
           <Route path='/registration' element={<RegistrationComponent/> }></Route>
           <Route path='/verify' element={<VerificationComponent/> }></Route>
-            <Route path='/profile' element={getAuthToken!==null&&<ProfileComponent/> }></Route>
-            <Route path='/' element={getAuthToken!==null&&<BlogpostComponent/> }></Route>
-            <Route path='/admin' element={getAuthToken!==null&&<AdminComponent/>}></Route>
+          {/* getAuthToken!==null&& */}
+            <Route path='/profile' element={<ProfileComponent/> }></Route> 
+            <Route path='/' element={<BlogpostComponent/> }></Route>
+            <Route path='/admin' element={<AdminComponent/>}></Route>
         </Routes>
     </BrowserRouter>
     </>
