@@ -6,9 +6,12 @@ import com.example.jhenaeumi.dto.LoginDto;
 import com.example.jhenaeumi.dto.SignUpDto;
 import com.example.jhenaeumi.dto.UserDto;
 import com.example.jhenaeumi.service.impl.UserServiceImpl;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,9 +21,16 @@ public class AuthController {
     private final UserServiceImpl userService;
     private final UserAuthenticationProvider userAuthenticationProvider;
     @PostMapping("/api/login")
-    public ResponseEntity<UserDto> login(@RequestBody @Valid LoginDto loginDto) {
+    public ResponseEntity<UserDto> login(@RequestBody @Valid LoginDto loginDto, HttpServletResponse response) {
         UserDto userDto = userService.login(loginDto);
         userDto.setToken(userAuthenticationProvider.createToken(userDto));
+        ResponseCookie cookie = ResponseCookie.from("accessToken", userDto.getToken())
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(120)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         return ResponseEntity.ok(userDto);
     }
 
