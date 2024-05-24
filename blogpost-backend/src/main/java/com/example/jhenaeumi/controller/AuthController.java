@@ -6,6 +6,7 @@ import com.example.jhenaeumi.dto.LoginDto;
 import com.example.jhenaeumi.dto.SignUpDto;
 import com.example.jhenaeumi.dto.UserDto;
 import com.example.jhenaeumi.service.impl.UserServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
 
 @RequiredArgsConstructor
 @RestController
@@ -49,11 +52,11 @@ public class AuthController {
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
-
+    //@RequestHeader("Authorization") String token
     @GetMapping("/api/token")
-    public ResponseEntity<?> checkToken(@RequestHeader("Authorization") String token){
+    public ResponseEntity<?> checkToken(HttpServletRequest request){
         try{
-            userService.validateToken(token);
+            userService.validateToken(request);
             return new ResponseEntity<>("Token is Valid", HttpStatus.OK);
         }catch (RuntimeException e){
             return new ResponseEntity<>("Token is Invalid", HttpStatus.UNAUTHORIZED);
