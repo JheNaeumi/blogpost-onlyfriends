@@ -165,8 +165,8 @@ public class UserServiceImpl implements UserService {
 
     private void sendVerificationEmail(String email,String otp){
         String subject = "Email verification";
-        //String body ="your verification otp is: "+otp;
-        String verificationLink = "http://localhost:5173/verify?email=" + email + "&otp=" + otp; //localhost
+        //String verificationLink = "http://localhost:8080/verify?email=" + email + "&otp=" + otp; //localhost
+        String verificationLink = " https://onlyfriendsblogpost.online/verify?email=" + email + "&otp=" + otp; //production
         String body = "Click <a href=\"" + verificationLink + "\">here</a> to verify your email.";
         emailService.sendEmail(email,subject,body);
     }
