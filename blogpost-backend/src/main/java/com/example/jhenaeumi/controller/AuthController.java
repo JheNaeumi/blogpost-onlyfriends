@@ -54,9 +54,9 @@ public class AuthController {
     }
     //@RequestHeader("Authorization") String token
     @GetMapping("/api/token")
-    public ResponseEntity<?> checkToken(HttpServletRequest request){
+    public ResponseEntity<?> checkToken(@RequestHeader("Authorization") String token){
         try{
-            userService.validateToken(request);
+            userService.validateToken(token);
             return new ResponseEntity<>("Token is Valid", HttpStatus.OK);
         }catch (RuntimeException e){
             return new ResponseEntity<>("Token is Invalid", HttpStatus.UNAUTHORIZED);
