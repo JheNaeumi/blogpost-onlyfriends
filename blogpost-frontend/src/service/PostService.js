@@ -1,7 +1,7 @@
 import axios from "axios"
 
 const REST_API_BASE_URL ='http://localhost:8080/api/post';
-
+//const REST_API_BASE_URL ='https://onlyfriendsblogpost.online/api/post'; // production
 
 export const getPostResponse = (token, page) => {
     return axios.get(REST_API_BASE_URL+`/user/all?pageNumber=${page}`, {

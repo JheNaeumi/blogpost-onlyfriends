@@ -1,6 +1,7 @@
 import axios from "axios"
 
 const REST_API_BASE_URL ='http://localhost:8080/api/comment';
+//const REST_API_BASE_URL ='https://onlyfriendsblogpost.online/api/comment'; // production
 
 export const postComment = (token, comment, postId) => {
     return axios.post(REST_API_BASE_URL+`/create/${postId}`, comment, {
