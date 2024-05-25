@@ -8,10 +8,11 @@
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "watch":"vite build --watch --emptyOutDir"
+    "watch": "vite build --watch --emptyOutDir"
   },
   "dependencies": {
     "axios": "^1.6.7",
+    "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
