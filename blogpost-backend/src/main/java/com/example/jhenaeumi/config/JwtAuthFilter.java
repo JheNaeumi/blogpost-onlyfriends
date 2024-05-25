@@ -31,20 +31,23 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 }
             }
         }
+
         //TODO: Change Logic Using Cookies
-        if (header != null) {
-            //String[] authElements = header.split(" ");
+        if (header == null) {
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
+            System.out.println(header);
+            return;
+        }
+        else {
             try {
                 SecurityContextHolder.getContext().setAuthentication(
                         userAuthenticationProvider.validateToken(header));
+                System.out.println("auth");
+
             } catch (RuntimeException e) {
                 SecurityContextHolder.clearContext();
                 throw e;
             }
-//            if (authElements.length == 2
-//                    && "Bearer".equals(authElements[0])) {
-//
-//            }
         }
 
         filterChain.doFilter(httpServletRequest, httpServletResponse);
