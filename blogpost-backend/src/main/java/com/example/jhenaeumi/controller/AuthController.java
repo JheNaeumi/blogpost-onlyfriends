@@ -27,13 +27,20 @@ public class AuthController {
     public ResponseEntity<UserDto> login(@RequestBody @Valid LoginDto loginDto, HttpServletResponse response) {
         UserDto userDto = userService.login(loginDto);
         userDto.setToken(userAuthenticationProvider.createToken(userDto));
-        ResponseCookie cookie = ResponseCookie.from("accessToken", userDto.getToken())
-                .httpOnly(true)
+//        ResponseCookie cookie = ResponseCookie.from("accessToken", userDto.getToken())
+//                .httpOnly(true)
+//                .secure(false)
+//                .path("/")
+//                .maxAge(120)
+//                .build();
+        ResponseCookie user_cookie = ResponseCookie.from("user_token", userDto.getToken())
+                .httpOnly(false)
                 .secure(false)
                 .path("/")
-                .maxAge(120)
+                .maxAge(80)//36000
                 .build();
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        //response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, user_cookie.toString());
         return ResponseEntity.ok(userDto);
     }
 
