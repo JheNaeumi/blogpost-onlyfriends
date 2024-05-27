@@ -54,7 +54,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(c -> c.configurationSource(corsConfigurationSource()))
-                .exceptionHandling(customizer -> customizer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)  )) // HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED) LoginUrlAuthenticationEntryPoint("/login")
+                .exceptionHandling(customizer -> customizer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")  )) // HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED) LoginUrlAuthenticationEntryPoint("/login")
                 .addFilterBefore(new JwtAuthFilter(userAuthenticationProvider), BasicAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
