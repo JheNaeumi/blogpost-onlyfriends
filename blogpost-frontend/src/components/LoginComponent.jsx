@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png"
 import { getAuthToken, setAuthHeader } from "../service/AuthService";
+import { getAccessToken } from "../service/CookieService";
 
 
 const LoginComponent = () => {
@@ -20,7 +21,7 @@ const LoginComponent = () => {
       const response = await postLogin(userlogin)
       if (response.status === 200) {
         const data = await response;
-        setAuthHeader(response.data.token);
+        //setAuthHeader(response.data.token);
         // console.log('Login successful', data);
         navigate("/")
       }else {
@@ -50,8 +51,10 @@ const LoginComponent = () => {
   }
   //If token is present, prevent from going back to login page
   useEffect(()=>{
-      let token = getAuthToken()
-      if(token !==null) {
+      //let token = getAuthToken()
+      let token = getAccessToken()
+      console.log(token)
+      if(token) {
         setisAuth(true)
         navigate("/")
       }

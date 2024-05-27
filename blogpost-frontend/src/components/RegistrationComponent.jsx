@@ -3,7 +3,7 @@ import { useState,useEffect } from "react";
 import { getAuthToken, setAuthHeader } from "../service/AuthService";
 import { useNavigate} from "react-router-dom";
 import logo from "../assets/logo.png"
-
+import { getAccessToken } from "../service/CookieService";
 const RegistrationComponent = () => {
   const navigate = useNavigate();
   const [isAuth, setisAuth] = useState(false);
@@ -78,8 +78,9 @@ const RegistrationComponent = () => {
     }
   }
   useEffect(()=>{
-    let token = getAuthToken()
-    if(token !==null) {
+     //const token = getAuthToken()
+     const token = getAccessToken()
+    if(token) {
       setisAuth(true)
       navigate("/")
     }

@@ -1,8 +1,8 @@
-import { useEffect, useLayoutEffect, useState} from 'react';
+import { useEffect, useState} from 'react';
 import { useNavigate} from "react-router-dom";
 import { useParams, useSearchParams} from 'react-router-dom';
 import { verify } from '../service/AuthenticationService';
-import { getAuthToken } from '../service/AuthService';
+import { getAccessToken } from '../service/CookieService';
 function VerificationComponent () {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -43,8 +43,9 @@ function VerificationComponent () {
   };
   
   useEffect(() => {
-    let token = getAuthToken()
-    if(token !==null) {
+     //const token = getAuthToken()
+     const token = getAccessToken()
+    if(token) {
       setisAuth(true)
       navigate("/")
     }

@@ -6,6 +6,7 @@ import { deleteUserContent, getPostResponse, getPostUser, postUserContent, updat
 import { deleteComment, postComment, updateComment } from "../service/CommentService";
 import { getListofUser, getProfile } from "../service/UserDataService";
 import { validToken } from "../service/AuthenticationService";
+import { getAccessToken, removeToken } from "../service/CookieService";
 
 const BlogpostComponent = () => {
  
@@ -35,7 +36,8 @@ const BlogpostComponent = () => {
 
 
   const checkAuthToken = async () => {
-    const token = getAuthToken();
+    //const token = getAuthToken();
+    const token = getAccessToken();
     if(token!==null){
       try {
           const response =  await validToken(token);
@@ -69,7 +71,9 @@ const BlogpostComponent = () => {
   //Logging out
   const logOut = () => {
     setAuthHeader(null)
+    removeToken();
     navigate('/login')
+    
   }
   //Checks Each Page change
   const handlePageChange = (page) => {
@@ -83,7 +87,8 @@ const BlogpostComponent = () => {
   //Get User's Data for identification
   const getUserProfileData = async() =>  {
     try {
-      const token = getAuthToken()
+      //const token = getAuthToken();
+    const token = getAccessToken();
       const response = await getProfile(token)
       if(response.status === 200){
         setFormData(response.data)
@@ -98,7 +103,8 @@ const BlogpostComponent = () => {
   //Get List of Post
   const fetchData = async (page) => {
     try {
-      const token = getAuthToken()
+       //const token = getAuthToken();
+    const token = getAccessToken();
       const response = await getPostResponse(token, page)
 
       mapContent(response.data.content)
@@ -115,7 +121,8 @@ const BlogpostComponent = () => {
   const handlePostUserContent = async(e) => {
     e.preventDefault();
     try{
-      const token = getAuthToken()
+       //const token = getAuthToken();
+    const token = getAccessToken();
       const response = await postUserContent(token,content)
       if(response.status === 201){
         //console.log('Post succesful')
@@ -148,7 +155,8 @@ const BlogpostComponent = () => {
     if (event.key === 'Enter') {
       // Prevent default behavior of form submission
       event.preventDefault();
-      const token = getAuthToken();
+       //const token = getAuthToken();
+    const token = getAccessToken();
       const response =  await getListofUser(token, searchTerm);
       const filteredResults = response.data;
       setSearchResults(filteredResults);
@@ -159,7 +167,8 @@ const BlogpostComponent = () => {
   const handleSelectResult = async(id, firstName, lastName) => {
     try {
       const searchname = {firstName, lastName}
-      const token = getAuthToken();
+       //const token = getAuthToken();
+    const token = getAccessToken();
       const response = await getPostUser(token, id);
       mapContent(response.data)
       setUser(searchname)
@@ -346,7 +355,8 @@ function Post({ post, getPostContent, formData }) {
     e.preventDefault()
     try{
     const updatedTitleAndContent = {postTitle, postContent}
-    const token = getAuthToken()
+    //const token = getAuthToken()
+    const token = getAccessToken()
     const response = await updateUserContent(token, post.id, updatedTitleAndContent)
     //console.log(response.status)
     setShowOptions(false);
@@ -360,7 +370,8 @@ function Post({ post, getPostContent, formData }) {
   const handleDeletePost = async(e) => {
     e.preventDefault();
     try {
-      const token = getAuthToken();
+       //const token = getAuthToken()
+    const token = getAccessToken()
       await deleteUserContent(token, post.id)
      
       setShowOptions(false);
@@ -372,7 +383,8 @@ function Post({ post, getPostContent, formData }) {
   //Update User's own comment
   const handleUpdateComment = async (commentId) => {
     try {
-      const token = getAuthToken()
+      //const token = getAuthToken()
+    const token = getAccessToken()
       const response = await updateComment(token, commentId, editedCommentContent)
       const updatedComment = response.data;
       setmappedComments(mappedComments.map(comment => {
@@ -391,7 +403,8 @@ function Post({ post, getPostContent, formData }) {
   //Delete User's own comment
   const handleDeleteComment = async (commentId) => {
     try {
-      const token = getAuthToken()
+       //const token = getAuthToken()
+    const token = getAccessToken()
       await deleteComment(token ,commentId)
       setmappedComments(mappedComments.filter(comment => comment.id !== commentId));
     } catch (error) {
@@ -402,7 +415,8 @@ function Post({ post, getPostContent, formData }) {
   const addComment = async(e) => {
     e.preventDefault()
     try {
-      const token = getAuthToken()
+       //const token = getAuthToken()
+    const token = getAccessToken()
       const response = await postComment(token, userComment, post.id)
       console.log("Comment Success")
       setCommentText('');

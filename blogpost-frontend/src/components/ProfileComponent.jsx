@@ -3,11 +3,13 @@ import { updateProfile, getProfile } from "../service/UserDataService";
 import { getAuthToken, setAuthHeader } from "../service/AuthService";
 import { useNavigate } from "react-router-dom";
 import { validToken } from "../service/AuthenticationService";
+import { getAccessToken, removeToken } from "../service/CookieService";
 
 
 const ProfileComponent = () => {
   const navigate = useNavigate();
-  const token = getAuthToken();
+  //const token = getAuthToken()
+  const token = getAccessToken()
   const [isAuth, setisAuth] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const [notifMessage, setnotifMessage] = useState('')
@@ -26,7 +28,8 @@ const ProfileComponent = () => {
     checkAuthToken();
   },[])
   const checkAuthToken = async () => {
-    const token = getAuthToken();
+    //const token = getAuthToken();
+    const token = getAccessToken();
     if(token!==null){
       try {
           const response =  await validToken(token);
@@ -37,12 +40,14 @@ const ProfileComponent = () => {
           }
       } catch (error) {
         console.log(error.response.data)
-        setAuthHeader(null)
+        //setAuthHeader(null)
+        removeToken()
         setisAuth(false)
         navigate('/login')
       }
     }else{
-      setAuthHeader(null)
+      //etAuthHeader(null)
+      removeToken()
       navigate('/login')
     }
   }
@@ -55,7 +60,8 @@ const ProfileComponent = () => {
     }
     } catch (error) {
       console.log("Error Getting User Profile Data")
-      setAuthHeader(null)
+      //setAuthHeader(null)
+      removeToken()
       navigate('/login')
     }
   }
